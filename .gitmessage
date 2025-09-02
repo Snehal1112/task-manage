@@ -1,0 +1,26 @@
+# <type>: <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type should be one of the following:
+# * feat (new feature)
+# * fix (bug fix)
+# * docs (documentation)
+# * style (formatting, missing semi colons, etc; no code change)
+# * refactor (refactoring production code)
+# * test (adding tests, refactoring test; no production code change)
+# * chore (updating build tasks, package manager configs, etc; no production code change)
+#
+# Subject should use imperative mood and not end with period
+# Body should explain what and why vs. how
+# Footer should contain any BREAKING CHANGE or reference issues
+#
+# Example:
+# feat: add task drag and drop functionality
+#
+# Implement drag and drop for tasks in the Eisenhower Matrix
+# to allow users to easily move tasks between quadrants.
+#
+# Closes #123
