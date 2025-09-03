@@ -71,7 +71,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
       {...attributes}
       {...listeners}
       className={cn(
-        "mb-3 transition-all duration-300 ease-out",
+        "transition-all duration-300 ease-out w-full",
         isDragging && !isDragOverlay && "opacity-30 scale-95",
         isDragOverlay && "rotate-3 scale-105 z-50"
       )}
@@ -87,57 +87,61 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
         task.quadrant === 'DELETE' && "border-l-gray-500 bg-gray-50/50",
         !isDragging && !isDragOverlay && "hover:scale-102 hover:shadow-lg"
       )}>
-        <CardContent className="p-4">
+        <CardContent className="p-3">
           <div className="space-y-2">
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-2">
               <h3 className={cn(
-                "font-semibold text-sm line-clamp-2",
+                "font-semibold text-sm leading-tight flex-1 min-w-0 break-words",
                 task.completed && "line-through text-muted-foreground"
               )}>
-                {task.title}
+                <span className="block truncate">{task.title}</span>
               </h3>
-              <div className="flex items-center space-x-1 ml-2">
+              <div className="flex items-center space-x-1 flex-shrink-0">
                 {task.completed && (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-3 w-3 text-green-500" />
                 )}
                 {task.urgent && (
-                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <AlertCircle className="h-3 w-3 text-red-500" />
                 )}
                 {task.important && (
-                  <Target className="h-4 w-4 text-blue-500" />
+                  <Target className="h-3 w-3 text-blue-500" />
                 )}
               </div>
             </div>
 
             {task.description && (
-              <p className="text-xs text-muted-foreground line-clamp-2">
-                {task.description}
-              </p>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground leading-tight break-words">
+                  <span className="line-clamp-2">{task.description}</span>
+                </p>
+              </div>
             )}
 
             {task.dueDate && (
               <div className={cn(
-                "flex items-center text-xs",
+                "flex items-center text-xs min-w-0",
                 isOverdue ? "text-red-600" : "text-muted-foreground"
               )}>
-                <Calendar className="h-3 w-3 mr-1" />
-                {formatDate(task.dueDate)}
-                {isOverdue && (
-                  <span className="ml-1 font-semibold">(Overdue)</span>
-                )}
+                <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
+                <span className="truncate">
+                  {formatDate(task.dueDate)}
+                  {isOverdue && (
+                    <span className="ml-1 font-semibold">(Overdue)</span>
+                  )}
+                </span>
               </div>
             )}
           </div>
         </CardContent>
 
         {!isDragOverlay && (
-          <CardFooter className="p-4 pt-0">
+          <CardFooter className="p-3 pt-0">
             <div className="flex justify-end space-x-1 w-full">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={handleEdit}
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 p-0"
                 onPointerDown={(e) => e.stopPropagation()}
               >
                 <Edit className="h-3 w-3" />
@@ -146,7 +150,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
                 size="sm"
                 variant="ghost"
                 onClick={handleDelete}
-                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                 onPointerDown={(e) => e.stopPropagation()}
               >
                 <Trash2 className="h-3 w-3" />
@@ -155,7 +159,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
                 size="sm"
                 variant="ghost"
                 onClick={handleToggleCompletion}
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 p-0"
                 onPointerDown={(e) => e.stopPropagation()}
               >
                 {task.completed ? (

@@ -73,15 +73,15 @@ const getQuadrantColors = (quadrant: TaskQuadrant) => {
 
 const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTasks }) => {
   const allTasksInQuadrant = useAppSelector(selectTasksByQuadrant(quadrant));
-  
-  const tasks = useMemo(() => 
+
+  const tasks = useMemo(() =>
     externalTasks ? externalTasks.filter(task => task.quadrant === quadrant) : allTasksInQuadrant,
     [externalTasks, quadrant, allTasksInQuadrant]
   );
-  
+
   const colors = useMemo(() => getQuadrantColors(quadrant), [quadrant]);
   const Icon = useMemo(() => getQuadrantIcon(quadrant), [quadrant]);
-  
+
   const { activeId, overId } = useDragContext();
 
   const { setNodeRef, isOver } = useDroppable({
@@ -94,80 +94,85 @@ const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTas
   if (quadrant === 'UNASSIGNED') return null;
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       <Card className={cn(
-        'h-full transition-all duration-200 hover:shadow-md',
+        'h-full flex flex-col transition-all duration-200 hover:shadow-md',
         colors.border,
-        'border-2'
+        'border'
       )}>
-        <CardHeader className={cn('pb-3 border-b', colors.header)}>
-          <CardTitle className="flex items-center justify-between text-sm">
+        <CardHeader className={cn('py-2.5 px-3 border-b flex-shrink-0', colors.header)}>
+          <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon className={cn('h-4 w-4', colors.icon)} />
-              <span className="font-bold text-sm">
+              <span className="font-bold text-sm truncate">
                 {QUADRANT_LABELS[quadrant]}
               </span>
             </div>
             <div className={cn(
-              'px-2 py-1 rounded-full text-xs font-bold',
+              'px-2 py-1 rounded-full text-xs font-bold flex-shrink-0 min-w-[24px] text-center',
               tasks.length > 0 ? colors.bg + ' ' + colors.icon : 'bg-gray-100 text-gray-500'
             )}>
               {tasks.length}
             </div>
           </CardTitle>
-          <p className={cn('text-xs font-medium opacity-90', colors.icon)}>
+          <p className={cn('text-xs font-medium opacity-90 leading-relaxed mt-1', colors.icon)}>
             {QUADRANT_DESCRIPTIONS[quadrant]}
           </p>
         </CardHeader>
-        
-        <CardContent className={cn("flex-1 overflow-hidden p-0", colors.bg)}>
+
+        <CardContent className={cn('flex-1 min-h-0 overflow-hidden p-0', colors.bg)}>
           <div
             ref={setNodeRef}
             className={cn(
-              "h-full transition-all duration-300 relative overflow-y-auto",
-              "min-h-[200px] p-3",
+              "h-full w-full transition-all duration-300 relative overflow-y-auto overflow-x-hidden",
+              "p-3 scrollbar-hover",
               colors.bg,
               isDragActive && !isBeingDraggedOver && "bg-opacity-60",
               isBeingDraggedOver && "bg-white/90 ring-2 ring-primary/40 ring-inset",
               isOver && !isBeingDraggedOver && "bg-white/70 ring-1 ring-primary/30 ring-inset"
             )}
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
+            }}
           >
             {/* Enhanced Drop placeholder */}
             {isBeingDraggedOver && (
               <div className="absolute inset-3 border-2 border-dashed border-primary/60 rounded-lg bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 animate-pulse">
                 <div className="text-center">
                   <div className={cn(
-                    'w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center',
+                    'w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center',
                     colors.bg, colors.icon
                   )}>
-                    <Icon className="h-6 w-6" />
+                    <Icon className="h-5 w-5" />
                   </div>
                   <p className="text-sm font-semibold text-gray-800">{QUADRANT_LABELS[quadrant]}</p>
-                  <p className="text-xs text-gray-600 mt-1">Drop your task here</p>
+                  <p className="text-xs text-gray-600 mt-1">Drop task here</p>
                 </div>
               </div>
             )}
-            
+
             {/* Empty state */}
             {tasks.length === 0 && !isBeingDraggedOver && (
               <div className="h-full flex items-center justify-center text-center">
                 <div className="text-muted-foreground">
-                  <Icon className={cn('h-8 w-8 mx-auto mb-3 opacity-30', colors.icon)} />
+                  <Icon className={cn('h-8 w-8 mx-auto mb-2 opacity-30', colors.icon)} />
                   <p className="text-sm font-medium opacity-60">No tasks yet</p>
-                  <p className="text-xs opacity-40 mt-1">Drag tasks from the panel</p>
+                  <p className="text-xs opacity-40 mt-1">Drag tasks here</p>
                 </div>
               </div>
             )}
-            
-            {/* Task list with improved spacing */}
-            <div className="space-y-3">
+
+            {/* Task list with improved spacing and proper overflow handling */}
+            <div className="space-y-2 min-h-0">
               {tasks.map((task, index) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  onEdit={onEditTask}
-                />
+                <div key={task.id} className="flex-shrink-0">
+                  <TaskCard
+                    task={task}
+                    index={index}
+                    onEdit={onEditTask}
+                  />
+                </div>
               ))}
             </div>
           </div>
