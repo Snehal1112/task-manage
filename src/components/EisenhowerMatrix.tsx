@@ -49,7 +49,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
                 </div>
               </div>
             </div>
-            
+
             {/* Matrix Grid with Left Axis Integration */}
             <div className="flex-1 flex gap-2 min-h-0">
               {/* Left Axis Labels - Compact Design */}
@@ -62,7 +62,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Not Important Label */}
                 <div className="flex-1 flex items-center justify-center py-1">
                   <div className="text-center">
@@ -74,7 +74,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
               </div>
 
               {/* Matrix Grid */}
-              <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1.5 h-full min-h-0 overflow-hidden">
+              <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 h-full min-h-0 overflow-hidden">
                 {/* Quadrant I: Urgent & Important (DO) */}
                 <div className="relative h-full min-h-0">
                   <div className="absolute -top-0.5 -left-0.5 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center z-10 shadow-md">
@@ -111,7 +111,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
 
             {/* Compact Legend */}
             <div className="mt-1 pt-1 border-t">
-              <div className="grid grid-cols-4 gap-1">
+              <div className="grid grid-cols-4 gap-1 p-5">
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                   <span className="text-xs font-medium truncate">1. Do First</span>

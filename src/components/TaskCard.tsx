@@ -17,7 +17,7 @@ interface TaskCardProps {
 
 const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverlay = false }) => {
   const dispatch = useAppDispatch();
-  
+
   const {
     attributes,
     listeners,
@@ -51,10 +51,10 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
   const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
   }, []);
 

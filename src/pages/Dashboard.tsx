@@ -57,7 +57,7 @@ const Dashboard: React.FC = () => {
           <div className="flex flex-col lg:flex-row gap-3 h-full">
             {/* Task Panel - Left Column */}
             <div className="w-full lg:w-1/3 lg:min-w-[280px]">
-              <TaskList 
+              <TaskList
                 ref={taskListRef}
                 onAddTask={handleAddTask}
                 onEditTask={handleEditTask}
@@ -67,8 +67,8 @@ const Dashboard: React.FC = () => {
 
             {/* Eisenhower Matrix - Right Column */}
             <div className="flex-1 lg:min-w-[450px]">
-              <EisenhowerMatrix 
-                onEditTask={handleEditTask} 
+              <EisenhowerMatrix
+                onEditTask={handleEditTask}
                 tasks={filteredTasks}
               />
             </div>
@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
       />
 
       {/* Keyboard Shortcuts */}
-      <KeyboardShortcuts 
+      <KeyboardShortcuts
         onAddTask={handleAddTask}
         onToggleSearch={() => taskListRef.current?.focusSearch()}
         onToggleCompleted={() => taskListRef.current?.toggleCompleted()}
