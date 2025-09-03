@@ -38,7 +38,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
   const quadrantTasks = useAppSelector(selectTasksByQuadrant(quadrant));
   const { activeId, overId } = useDragContext();
   const searchInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [filters, setFilters] = useState<TaskFilters>({
     search: '',
     showCompleted: false,
@@ -49,7 +49,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
 
   // Get base tasks for the quadrant
   const baseTasks = quadrant === 'UNASSIGNED' ? unassignedTasks : quadrantTasks;
-  
+
   // Apply filters to tasks
   const displayTasks = useMemo(() => {
     let filtered = baseTasks;
@@ -162,9 +162,9 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
   const isDragActive = !!activeId;
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
+    <Card className="h-full"> {/* Added padding to the Card */}
+      <CardHeader className="pb-6"> {/* Increased bottom padding for better spacing */}
+        <div className="flex items-center justify-between mb-4"> {/* Added margin-bottom for spacing */}
           <CardTitle className="flex items-center gap-2">
             <Inbox className="h-5 w-5" />
             Task Panel
@@ -177,9 +177,9 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
             Add Task
           </Button>
         </div>
-        
+
         {/* Integrated Search and Filter */}
-        <div className="space-y-3 pt-3">
+        <div className="space-y-4 pt-3"> {/* Adjusted spacing between sections */}
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -236,7 +236,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
 
           {/* Filter Options */}
           {showFilters && (
-            <div className="grid grid-cols-2 gap-3 p-3 bg-muted/50 rounded-lg">
+            <div className="grid grid-cols-2 gap-3 p-4 bg-muted/50 rounded-lg"> {/* Adjusted padding for better spacing */}
               <div className="space-y-2">
                 <label className="text-xs font-medium">Status</label>
                 <Checkbox
@@ -268,12 +268,12 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
           )}
         </div>
       </CardHeader>
-      
-      <CardContent className="flex-1 overflow-y-auto max-h-[calc(100vh-240px)] scrollbar-on-hover">
+
+      <CardContent className="flex-1 overflow-y-auto max-h-[calc(100vh-240px)] scrollbar-on-hover"> {/* Added padding for better spacing */}
         <div
           ref={setNodeRef}
           className={cn(
-            "min-h-[300px] transition-all duration-300 rounded-md p-2 relative",
+            "min-h-[300px] transition-all duration-300 rounded-md p-1 relative", /* Adjusted padding */
             isDragActive && "ring-2 ring-primary/10 bg-accent/20",
             isBeingDraggedOver && "bg-primary/10 ring-2 ring-primary/40 scale-102 shadow-lg",
             isOver && !isBeingDraggedOver && "bg-accent/50 ring-2 ring-primary/20 scale-101"
@@ -289,7 +289,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
               </div>
             </div>
           )}
-          
+
           {displayTasks.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
               <Inbox className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -303,6 +303,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
                 task={task}
                 index={index}
                 onEdit={onEditTask}
+                className="mb-4" /* Added margin-bottom for spacing between tasks */
               />
             ))
           )}
