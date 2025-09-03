@@ -1,11 +1,11 @@
-import React from 'react';
+import { memo, useCallback } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useAppDispatch } from '@/app/hooks';
-import { deleteTask } from '@/features/tasks/tasksSlice';
+import { deleteTask, toggleTaskCompletion } from '@/features/tasks/tasksSlice';
 import { Task } from '@/features/tasks/TaskTypes';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Calendar, AlertCircle, Target } from 'lucide-react';
+import { Edit, Trash2, Calendar, AlertCircle, Target, Check, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
@@ -15,7 +15,7 @@ interface TaskCardProps {
   isDragOverlay?: boolean;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, index: _index, onEdit, isDragOverlay = false }) => {
+const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverlay = false }) => {
   const dispatch = useAppDispatch();
   
   const {
@@ -32,26 +32,31 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index: _index, onEdit, isDrag
     },
   });
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm(`Are you sure you want to delete "${task.title}"?`)) {
       dispatch(deleteTask(task.id));
     }
-  };
+  }, [dispatch, task.id, task.title]);
 
-  const handleEdit = (e: React.MouseEvent) => {
+  const handleEdit = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(task);
-  };
+  }, [onEdit, task]);
 
-  const formatDate = (dateString: string) => {
+  const handleToggleCompletion = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(toggleTaskCompletion(task.id));
+  }, [dispatch, task.id]);
+
+  const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric', 
       year: 'numeric' 
     });
-  };
+  }, []);
 
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
 
@@ -85,10 +90,16 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index: _index, onEdit, isDrag
         <CardContent className="p-4">
           <div className="space-y-2">
             <div className="flex items-start justify-between">
-              <h3 className="font-semibold text-sm line-clamp-2">
+              <h3 className={cn(
+                "font-semibold text-sm line-clamp-2",
+                task.completed && "line-through text-muted-foreground"
+              )}>
                 {task.title}
               </h3>
               <div className="flex items-center space-x-1 ml-2">
+                {task.completed && (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                )}
                 {task.urgent && (
                   <AlertCircle className="h-4 w-4 text-red-500" />
                 )}
@@ -140,12 +151,27 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index: _index, onEdit, isDrag
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleToggleCompletion}
+                className="h-8 w-8 p-0"
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                {task.completed ? (
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                ) : (
+                  <Check className="h-3 w-3 text-gray-500" />
+                )}
+              </Button>
             </div>
           </CardFooter>
         )}
       </Card>
     </div>
   );
-};
+});
+
+TaskCard.displayName = 'TaskCard';
 
 export default TaskCard;

@@ -26,6 +26,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
     dueDate: '',
     urgent: false,
     important: false,
+    completed: false,
   });
 
   // Update form data when task prop changes (for editing)
@@ -37,6 +38,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
         dueDate: task.dueDate || '',
         urgent: task.urgent,
         important: task.important,
+        completed: task.completed,
       });
     } else {
       setFormData({
@@ -45,6 +47,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
         dueDate: '',
         urgent: false,
         important: false,
+        completed: false,
       });
     }
   }, [task]);
@@ -78,6 +81,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
       dueDate: '',
       urgent: false,
       important: false,
+      completed: false,
     });
   };
 
@@ -174,6 +178,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
                 label="Important - Has significant impact"
               />
             </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-medium">
+              Status
+            </label>
+            <Checkbox
+              checked={formData.completed}
+              onChange={(e) => updateFormData('completed', e.target.checked)}
+              label="Mark as completed"
+            />
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">

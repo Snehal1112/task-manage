@@ -8,6 +8,8 @@ export interface Task {
   urgent: boolean;
   important: boolean;
   quadrant: TaskQuadrant;
+  completed: boolean;
+  completedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +20,7 @@ export interface TaskFormData {
   dueDate?: string;
   urgent: boolean;
   important: boolean;
+  completed: boolean;
 }
 
 export interface TasksState {

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Task, TasksState, TaskFormData, TaskQuadrant } from './TaskTypes';
-import { saveTasksToStorage, loadTasksFromStorage } from '@/utils/storage';
+import { saveTasksToStorage, loadTasksFromStorage, loadDemoData } from '@/utils/storage';
 
 const initialState: TasksState = {
   tasks: loadTasksFromStorage(),
@@ -54,6 +54,7 @@ const tasksSlice = createSlice({
           urgent: Boolean(action.payload.urgent),
           important: Boolean(action.payload.important),
           quadrant: 'UNASSIGNED', // Always start new tasks in Task Panel
+          completed: false, // New tasks start as incomplete
           createdAt: now,
           updatedAt: now,
         };
@@ -171,6 +172,23 @@ const tasksSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+
+    toggleTaskCompletion: (state, action: PayloadAction<string>) => {
+      const task = state.tasks.find(task => task.id === action.payload);
+      
+      if (task) {
+        const now = new Date().toISOString();
+        task.completed = !task.completed;
+        task.completedAt = task.completed ? now : undefined;
+        task.updatedAt = now;
+        saveTasksToStorage(state.tasks);
+      }
+    },
+
+    loadDemoTasks: (state) => {
+      state.tasks = loadDemoData();
+      saveTasksToStorage(state.tasks);
+    },
   },
 });
 
@@ -183,6 +201,8 @@ export const {
   setLoading,
   setError,
   clearError,
+  toggleTaskCompletion,
+  loadDemoTasks,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

@@ -5,11 +5,13 @@ Thank you for your interest in contributing to our Task Management App! This doc
 ## Development Setup
 
 ### Prerequisites
+
 - Node.js (v18 or higher)
 - Yarn package manager
 - Git
 
 ### Getting Started
+
 1. Fork the repository
 2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/task-mange.git`
 3. Install dependencies: `yarn install`
@@ -18,12 +20,14 @@ Thank you for your interest in contributing to our Task Management App! This doc
 ## Development Workflow
 
 ### Branch Naming
+
 - `feature/description` - for new features
 - `fix/description` - for bug fixes
 - `docs/description` - for documentation updates
 - `refactor/description` - for code refactoring
 
 ### Commit Messages
+
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
 ```
@@ -35,6 +39,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -44,6 +49,7 @@ Types:
 - `chore`: Maintenance tasks
 
 ### Code Style
+
 - Use TypeScript for all new code
 - Follow the existing code style (enforced by ESLint and Prettier)
 - Use meaningful variable and function names
@@ -51,11 +57,13 @@ Types:
 - Write tests for new features
 
 ### Testing
+
 - Write unit tests for new components and utilities
 - Ensure all tests pass before submitting a PR
 - Run tests with: `yarn test`
 
 ### Pull Request Process
+
 1. Create a feature branch from `main`
 2. Make your changes
 3. Add tests for new functionality
@@ -91,6 +99,7 @@ src/
 ## Getting Help
 
 If you have questions or need help:
+
 1. Check existing issues and documentation
 2. Create a new issue with a clear description
 3. Join our community discussions

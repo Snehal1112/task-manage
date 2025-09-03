@@ -1,13 +1,21 @@
 import { Task } from '@/features/tasks/TaskTypes';
 import { STORAGE_KEY } from './constants';
+import { demoTasks } from './demoData';
 
 export const loadTasksFromStorage = (): Task[] => {
   try {
     const storedTasks = localStorage.getItem(STORAGE_KEY);
-    return storedTasks ? JSON.parse(storedTasks) : [];
+    if (storedTasks) {
+      const parsedTasks = JSON.parse(storedTasks);
+      // Return demo data if storage is empty or only has empty array
+      return parsedTasks.length > 0 ? parsedTasks : demoTasks;
+    }
+    // Return demo data for first-time users
+    return demoTasks;
   } catch (error) {
     console.error('Failed to load tasks from storage:', error);
-    return [];
+    // Return demo data as fallback
+    return demoTasks;
   }
 };
 
@@ -25,4 +33,8 @@ export const clearTasksFromStorage = (): void => {
   } catch (error) {
     console.error('Failed to clear tasks from storage:', error);
   }
+};
+
+export const loadDemoData = (): Task[] => {
+  return demoTasks;
 };

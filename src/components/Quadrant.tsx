@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo, useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { useAppSelector } from '@/app/hooks';
 import { selectTasksByQuadrant } from '@/features/tasks/tasksSelectors';
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 interface QuadrantProps {
   quadrant: TaskQuadrant;
   onEditTask: (task: Task) => void;
+  tasks?: Task[];
 }
 
 const getQuadrantIcon = (quadrant: TaskQuadrant) => {
@@ -35,28 +36,28 @@ const getQuadrantColors = (quadrant: TaskQuadrant) => {
     case 'DO':
       return {
         border: 'border-red-200',
-        bg: 'bg-red-50',
+        bg: 'bg-red-100',
         header: 'bg-red-100 text-red-800',
         icon: 'text-red-600'
       };
     case 'SCHEDULE':
       return {
         border: 'border-blue-200',
-        bg: 'bg-blue-50',
+        bg: 'bg-blue-100',
         header: 'bg-blue-100 text-blue-800',
         icon: 'text-blue-600'
       };
     case 'DELEGATE':
       return {
         border: 'border-yellow-200',
-        bg: 'bg-yellow-50',
+        bg: 'bg-yellow-100',
         header: 'bg-yellow-100 text-yellow-800',
         icon: 'text-yellow-600'
       };
     case 'DELETE':
       return {
         border: 'border-gray-200',
-        bg: 'bg-gray-50',
+        bg: 'bg-gray-100',
         header: 'bg-gray-100 text-gray-800',
         icon: 'text-gray-600'
       };
@@ -70,10 +71,17 @@ const getQuadrantColors = (quadrant: TaskQuadrant) => {
   }
 };
 
-const Quadrant: React.FC<QuadrantProps> = ({ quadrant, onEditTask }) => {
-  const tasks = useAppSelector(selectTasksByQuadrant(quadrant));
-  const colors = getQuadrantColors(quadrant);
-  const Icon = getQuadrantIcon(quadrant);
+const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTasks }) => {
+  const allTasksInQuadrant = useAppSelector(selectTasksByQuadrant(quadrant));
+  
+  const tasks = useMemo(() => 
+    externalTasks ? externalTasks.filter(task => task.quadrant === quadrant) : allTasksInQuadrant,
+    [externalTasks, quadrant, allTasksInQuadrant]
+  );
+  
+  const colors = useMemo(() => getQuadrantColors(quadrant), [quadrant]);
+  const Icon = useMemo(() => getQuadrantIcon(quadrant), [quadrant]);
+  
   const { activeId, overId } = useDragContext();
 
   const { setNodeRef, isOver } = useDroppable({
@@ -86,64 +94,89 @@ const Quadrant: React.FC<QuadrantProps> = ({ quadrant, onEditTask }) => {
   if (quadrant === 'UNASSIGNED') return null;
 
   return (
-    <Card className={cn('h-full', colors.border, colors.bg)}>
-      <CardHeader className={cn('pb-3', colors.header)}>
-        <CardTitle className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <Icon className={cn('h-4 w-4', colors.icon)} />
-            <span className="font-semibold">
-              {QUADRANT_LABELS[quadrant]}
-            </span>
-          </div>
-          <span className="text-xs font-normal">
-            {tasks.length} task{tasks.length !== 1 ? 's' : ''}
-          </span>
-        </CardTitle>
-        <p className="text-xs opacity-80">
-          {QUADRANT_DESCRIPTIONS[quadrant]}
-        </p>
-      </CardHeader>
-      
-      <CardContent className="flex-1 overflow-y-auto pt-0 max-h-[calc((100vh-300px)/2)] scrollbar-on-hover">
-        <div
-          ref={setNodeRef}
-          className={cn(
-            "min-h-[180px] transition-all duration-300 rounded-md p-2 relative",
-            isDragActive && "ring-2 ring-primary/10",
-            isBeingDraggedOver && "bg-white/90 ring-2 ring-primary/50 scale-105 shadow-lg",
-            isOver && !isBeingDraggedOver && "bg-white/70 ring-2 ring-primary/40 scale-103"
-          )}
-        >
-          {/* Drop placeholder */}
-          {isBeingDraggedOver && (
-            <div className="absolute inset-2 border-2 border-dashed border-primary/60 rounded-md bg-primary/10 flex items-center justify-center z-10 animate-pulse">
-              <div className="text-center text-primary/80">
-                <Icon className={cn('h-6 w-6 mx-auto mb-2', colors.icon)} />
-                <p className="text-xs font-medium">{QUADRANT_LABELS[quadrant]}</p>
-                <p className="text-xs opacity-80">Drop task here</p>
+    <div className="h-full">
+      <Card className={cn(
+        'h-full transition-all duration-200 hover:shadow-md',
+        colors.border,
+        'border-2'
+      )}>
+        <CardHeader className={cn('pb-3 border-b', colors.header)}>
+          <CardTitle className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <Icon className={cn('h-4 w-4', colors.icon)} />
+              <span className="font-bold text-sm">
+                {QUADRANT_LABELS[quadrant]}
+              </span>
+            </div>
+            <div className={cn(
+              'px-2 py-1 rounded-full text-xs font-bold',
+              tasks.length > 0 ? colors.bg + ' ' + colors.icon : 'bg-gray-100 text-gray-500'
+            )}>
+              {tasks.length}
+            </div>
+          </CardTitle>
+          <p className={cn('text-xs font-medium opacity-90', colors.icon)}>
+            {QUADRANT_DESCRIPTIONS[quadrant]}
+          </p>
+        </CardHeader>
+        
+        <CardContent className={cn("flex-1 overflow-hidden p-0", colors.bg)}>
+          <div
+            ref={setNodeRef}
+            className={cn(
+              "h-full transition-all duration-300 relative overflow-y-auto",
+              "min-h-[200px] p-3",
+              colors.bg,
+              isDragActive && !isBeingDraggedOver && "bg-opacity-60",
+              isBeingDraggedOver && "bg-white/90 ring-2 ring-primary/40 ring-inset",
+              isOver && !isBeingDraggedOver && "bg-white/70 ring-1 ring-primary/30 ring-inset"
+            )}
+          >
+            {/* Enhanced Drop placeholder */}
+            {isBeingDraggedOver && (
+              <div className="absolute inset-3 border-2 border-dashed border-primary/60 rounded-lg bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 animate-pulse">
+                <div className="text-center">
+                  <div className={cn(
+                    'w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center',
+                    colors.bg, colors.icon
+                  )}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-800">{QUADRANT_LABELS[quadrant]}</p>
+                  <p className="text-xs text-gray-600 mt-1">Drop your task here</p>
+                </div>
               </div>
+            )}
+            
+            {/* Empty state */}
+            {tasks.length === 0 && !isBeingDraggedOver && (
+              <div className="h-full flex items-center justify-center text-center">
+                <div className="text-muted-foreground">
+                  <Icon className={cn('h-8 w-8 mx-auto mb-3 opacity-30', colors.icon)} />
+                  <p className="text-sm font-medium opacity-60">No tasks yet</p>
+                  <p className="text-xs opacity-40 mt-1">Drag tasks from the panel</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Task list with improved spacing */}
+            <div className="space-y-3">
+              {tasks.map((task, index) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  index={index}
+                  onEdit={onEditTask}
+                />
+              ))}
             </div>
-          )}
-          
-          {tasks.length === 0 ? (
-            <div className="text-center text-muted-foreground py-6">
-              <Icon className={cn('h-8 w-8 mx-auto mb-2 opacity-50', colors.icon)} />
-              <p className="text-xs">Drop tasks here</p>
-            </div>
-          ) : (
-            tasks.map((task, index) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                index={index}
-                onEdit={onEditTask}
-              />
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
-};
+});
+
+Quadrant.displayName = 'Quadrant';
 
 export default Quadrant;
