@@ -12,16 +12,16 @@ interface EisenhowerMatrixProps {
 const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }) => {
   return (
     <div className="h-full flex flex-col">
-      {/* Compact Header */}
+      {/* Enhanced Header with Improved Typography */}
       <Card className="mb-2 shadow-sm">
-        <CardHeader className="py-2 px-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <div className="p-1 bg-primary/10 rounded-md">
-              <Target className="h-4 w-4 text-primary" />
+        <CardHeader className="py-3 px-4">
+          <CardTitle className="flex items-center gap-3 text-lg">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Target className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <div className="text-sm font-bold">Eisenhower Matrix</div>
-              <div className="text-xs font-normal text-muted-foreground">
+              <div className="text-xl font-bold tracking-tight text-foreground">Eisenhower Matrix</div>
+              <div className="text-sm font-medium text-muted-foreground leading-relaxed">
                 Organize by urgency and importance
               </div>
             </div>
@@ -33,18 +33,18 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
       <div className="flex-1 min-h-0">
         <Card className="h-full shadow-sm">
           <div className="p-2 h-full flex flex-col">
-            {/* Compact Axis Labels */}
-            <div className="relative mb-2">
+            {/* Enhanced Axis Labels with Better Typography */}
+            <div className="relative mb-3">
               {/* Top axis - Urgency */}
-              <div className="flex items-center justify-center mb-2">
+              <div className="flex items-center justify-center mb-3">
                 <div className="grid grid-cols-2 gap-8 w-full">
                   <div className="text-center">
-                    <div className="text-xs font-bold text-red-700 tracking-wide mb-1">URGENT</div>
-                    <div className="w-12 h-0.5 bg-red-600 mx-auto"></div>
+                    <div className="text-sm font-bold text-red-700 tracking-wider mb-2 uppercase">Urgent</div>
+                    <div className="w-16 h-0.5 bg-red-600 mx-auto rounded-full"></div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs font-bold text-blue-700 tracking-wide mb-1">NOT URGENT</div>
-                    <div className="w-12 h-0.5 bg-blue-600 mx-auto"></div>
+                    <div className="text-sm font-bold text-blue-700 tracking-wider mb-2 uppercase">Not Urgent</div>
+                    <div className="w-16 h-0.5 bg-blue-600 mx-auto rounded-full"></div>
                   </div>
                 </div>
               </div>
@@ -52,22 +52,22 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
 
             {/* Matrix Grid with Left Axis Integration */}
             <div className="flex-1 flex gap-2 min-h-0">
-              {/* Left Axis Labels - Compact Design */}
-              <div className="flex flex-col justify-between min-w-[50px]">
+              {/* Enhanced Left Axis Labels with Better Typography */}
+              <div className="flex flex-col justify-between min-w-[60px]">
                 {/* Important Label */}
-                <div className="flex-1 flex items-center justify-center py-1">
+                <div className="flex-1 flex items-center justify-center py-2">
                   <div className="text-center">
-                    <div className="text-xs font-bold text-green-700 -rotate-90 whitespace-nowrap">
-                      IMPORTANT
+                    <div className="text-sm font-bold text-green-700 -rotate-90 whitespace-nowrap tracking-wider uppercase">
+                      Important
                     </div>
                   </div>
                 </div>
 
                 {/* Not Important Label */}
-                <div className="flex-1 flex items-center justify-center py-1">
+                <div className="flex-1 flex items-center justify-center py-2">
                   <div className="text-center">
-                    <div className="text-xs font-bold text-gray-600 -rotate-90 whitespace-nowrap">
-                      NOT IMPORTANT
+                    <div className="text-sm font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase">
+                      Not Important
                     </div>
                   </div>
                 </div>
@@ -97,24 +97,24 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
               </div>
             </div>
 
-            {/* Compact Legend */}
-            <div className="mt-1 pt-1 border-t">
-              <div className="grid grid-cols-4 gap-1 p-5">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span className="text-xs font-medium truncate">1. Do First</span>
+            {/* Enhanced Legend with Better Typography */}
+            <div className="mt-2 pt-3 border-t">
+              <div className="grid grid-cols-4 gap-2 p-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span className="text-sm font-semibold text-foreground">1. Do First</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-xs font-medium truncate">2. Schedule</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className="text-sm font-semibold text-foreground">2. Schedule</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-xs font-medium truncate">3. Delegate</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span className="text-sm font-semibold text-foreground">3. Delegate</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                  <span className="text-xs font-medium truncate">4. Delete</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                  <span className="text-sm font-semibold text-foreground">4. Delete</span>
                 </div>
               </div>
             </div>

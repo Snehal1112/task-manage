@@ -93,7 +93,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-2">
               <h3 className={cn(
-                "font-semibold text-lg leading-tight flex-1 min-w-0 break-words",
+                "font-bold text-base leading-tight flex-1 min-w-0 break-words tracking-tight",
                 task.completed && "line-through text-muted-foreground"
               )}>
                 <span className="block truncate">{task.title}</span>
@@ -110,23 +110,23 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
             {task.description && (
               <div className="min-w-0">
-                <p className="text-sm text-muted-foreground leading-tight break-words">
+                <p className="text-sm font-medium text-muted-foreground leading-relaxed break-words">
                   <span className="line-clamp-2">{task.description}</span>
                 </p>
               </div>
             )}
 
             {task.dueDate && (
-              <div className="text-xs text-muted-foreground">
-                <Calendar className="inline-block h-3 w-3 mr-1" />
+              <div className="text-sm font-medium text-muted-foreground">
+                <Calendar className="inline-block h-4 w-4 mr-1.5" />
                 {formatDate(task.dueDate)}
               </div>
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex items-center justify-between p-2">
-          <Button variant="ghost" size="sm" onClick={handleEdit}>
-            <Edit className="h-4 w-4 mr-1" /> Edit
+        <CardFooter className="flex items-center justify-between p-3">
+          <Button variant="ghost" size="sm" onClick={handleEdit} className="text-sm font-medium">
+            <Edit className="h-4 w-4 mr-1.5" /> Edit
           </Button>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" onClick={handleToggleCompletion}>
