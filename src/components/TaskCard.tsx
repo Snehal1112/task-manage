@@ -104,7 +104,10 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
                   <CheckCircle className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "text-green-500")} />
                 )}
                 {isOverdue && !task.completed && (
-                  <AlertCircle className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "text-red-500")} />
+                  <AlertCircle className={cn(
+                    CONTEXT_ICON_SIZES.taskStatusIcon,
+                    "text-red-500 animate-pulse"
+                  )} />
                 )}
               </div>
             </div>
@@ -118,16 +121,30 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
             )}
 
             {task.dueDate && (
-              <div className="text-xs lg:text-sm font-medium text-muted-foreground">
-                <Calendar className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "inline-block mr-1 lg:mr-2")} />
-                {formatDate(task.dueDate)}
+              <div className={cn(
+                "text-xs lg:text-sm font-medium flex items-center gap-1 lg:gap-2",
+                isOverdue && !task.completed
+                  ? "text-red-600 font-bold"
+                  : "text-muted-foreground"
+              )}>
+                <Calendar className={cn(
+                  CONTEXT_ICON_SIZES.taskStatusIcon,
+                  "inline-block flex-shrink-0",
+                  isOverdue && !task.completed && "text-red-500"
+                )} />
+                <span className={cn(
+                  "truncate",
+                  isOverdue && !task.completed && "font-bold text-red-600"
+                )}>
+                  {formatDate(task.dueDate)}
+                </span>
               </div>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between p-2 lg:p-4">
           <Button variant="ghost" size="sm" onClick={handleEdit} className="text-xs lg:text-sm font-medium px-2 lg:px-3">
-            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 lg:mr-2")} /> 
+            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 lg:mr-2")} />
             <span className="hidden lg:inline">Edit</span>
           </Button>
           <div className="flex items-center space-x-1 lg:space-x-2">
