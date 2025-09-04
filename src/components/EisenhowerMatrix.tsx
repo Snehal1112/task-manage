@@ -12,15 +12,15 @@ interface EisenhowerMatrixProps {
 const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }) => {
   return (
     <div className="h-full flex flex-col">
-      {/* Enhanced Header with Improved Typography */}
-      <Card className="mb-2 shadow-sm">
-        <CardHeader className="py-3 px-4">
-          <CardTitle className="flex items-center gap-3 text-lg">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Target className="h-5 w-5 text-primary" />
+      {/* Enhanced Header with Improved Typography and Professional Branding */}
+      <Card className="mb-4 shadow-lg">
+        <CardHeader className="py-6 px-6">
+          <CardTitle className="flex items-center gap-4 text-2xl">
+            <div className="p-3 bg-primary/15 rounded-xl shadow-sm">
+              <Target className="h-7 w-7 text-primary" />
             </div>
-            <div>
-              <div className="text-xl font-bold tracking-tight text-foreground">Eisenhower Matrix</div>
+            <div className="flex-1">
+              <div className="text-xl font-bold tracking-tight text-foreground mb-2">Eisenhower Matrix</div>
               <div className="text-sm font-medium text-muted-foreground leading-relaxed">
                 Organize by urgency and importance
               </div>
