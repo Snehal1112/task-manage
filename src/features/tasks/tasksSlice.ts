@@ -1,208 +1,303 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Task, TasksState, TaskFormData, TaskQuadrant } from './TaskTypes';
-import { saveTasksToStorage, loadTasksFromStorage, loadDemoData } from '@/utils/storage';
+import { taskAPI } from '@/services/api';
 
+// Initial state with loading and error handling
 const initialState: TasksState = {
-  tasks: loadTasksFromStorage(),
+  tasks: [],
   loading: false,
   error: null,
 };
 
-// Tasks can only move between quadrants via drag and drop
-// The urgent/important flags are for display purposes only
+// Async thunks for API operations
+export const fetchTasks = createAsyncThunk(
+  'tasks/fetchTasks',
+  async (_, { rejectWithValue }) => {
+    try {
+      const tasks = await taskAPI.getAllTasks();
+      return tasks;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch tasks');
+    }
+  }
+);
 
+export const createTask = createAsyncThunk(
+  'tasks/createTask',
+  async (taskData: TaskFormData, { rejectWithValue }) => {
+    try {
+      const newTask = await taskAPI.createTask(taskData);
+      return newTask;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create task');
+    }
+  }
+);
+
+export const updateTask = createAsyncThunk(
+  'tasks/updateTask',
+  async (params: { id: string; updates: Partial<TaskFormData> }, { rejectWithValue }) => {
+    try {
+      const updatedTask = await taskAPI.updateTask(params.id, params.updates);
+      return updatedTask;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update task');
+    }
+  }
+);
+
+export const deleteTask = createAsyncThunk(
+  'tasks/deleteTask',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await taskAPI.deleteTask(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete task');
+    }
+  }
+);
+
+export const moveTaskToQuadrant = createAsyncThunk(
+  'tasks/moveTaskToQuadrant',
+  async (params: { id: string; quadrant: TaskQuadrant }, { rejectWithValue }) => {
+    try {
+      const updatedTask = await taskAPI.moveTaskToQuadrant(params.id, params.quadrant);
+      return updatedTask;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to move task to quadrant');
+    }
+  }
+);
+
+export const toggleTaskCompletion = createAsyncThunk(
+  'tasks/toggleTaskCompletion',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const updatedTask = await taskAPI.toggleTaskCompletion(id);
+      return updatedTask;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to toggle task completion');
+    }
+  }
+);
+
+export const clearAllTasks = createAsyncThunk(
+  'tasks/clearAllTasks',
+  async (_, { rejectWithValue }) => {
+    try {
+      await taskAPI.clearAllTasks();
+      return;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to clear all tasks');
+    }
+  }
+);
+
+export const loadDemoTasks = createAsyncThunk(
+  'tasks/loadDemoTasks',
+  async (_, { rejectWithValue }) => {
+    try {
+      const demoTasks = await taskAPI.loadDemoTasks();
+      return demoTasks;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to load demo tasks');
+    }
+  }
+);
+
+// Tasks slice
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    addTask: (state, action: PayloadAction<TaskFormData>) => {
-      try {
-        // Validate required fields
-        if (!action.payload.title || action.payload.title.trim().length === 0) {
-          state.error = 'Task title is required';
-          return;
-        }
-
-        // Validate title length
-        if (action.payload.title.trim().length > 100) {
-          state.error = 'Task title must be 100 characters or less';
-          return;
-        }
-
-        // Validate description length
-        if (action.payload.description && action.payload.description.length > 500) {
-          state.error = 'Task description must be 500 characters or less';
-          return;
-        }
-
-        // Validate due date
-        if (action.payload.dueDate) {
-          const dueDate = new Date(action.payload.dueDate);
-          if (isNaN(dueDate.getTime())) {
-            state.error = 'Invalid due date format';
-            return;
-          }
-        }
-
-        const now = new Date().toISOString();
-        
-        const newTask: Task = {
-          id: `task-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-          title: action.payload.title.trim(),
-          description: action.payload.description?.trim() || undefined,
-          dueDate: action.payload.dueDate,
-          urgent: Boolean(action.payload.urgent),
-          important: Boolean(action.payload.important),
-          quadrant: 'UNASSIGNED', // Always start new tasks in Task Panel
-          completed: false, // New tasks start as incomplete
-          createdAt: now,
-          updatedAt: now,
-        };
-
-        state.tasks.push(newTask);
-        state.error = null; // Clear any previous errors
-        saveTasksToStorage(state.tasks);
-      } catch (error) {
-        state.error = 'Failed to add task. Please try again.';
-        console.error('Error adding task:', error);
-      }
-    },
-
-    updateTask: (state, action: PayloadAction<Partial<Task> & { id: string }>) => {
-      try {
-        const { id, ...updates } = action.payload;
-        
-        if (!id) {
-          state.error = 'Task ID is required for update';
-          return;
-        }
-
-        const taskIndex = state.tasks.findIndex(task => task.id === id);
-        
-        if (taskIndex === -1) {
-          state.error = 'Task not found';
-          return;
-        }
-
-        // Validate updates if they exist
-        if (updates.title !== undefined) {
-          if (!updates.title || updates.title.trim().length === 0) {
-            state.error = 'Task title cannot be empty';
-            return;
-          }
-          if (updates.title.trim().length > 100) {
-            state.error = 'Task title must be 100 characters or less';
-            return;
-          }
-        }
-
-        if (updates.description !== undefined && updates.description && updates.description.length > 500) {
-          state.error = 'Task description must be 500 characters or less';
-          return;
-        }
-
-        const updatedTask = { ...state.tasks[taskIndex], ...updates };
-        
-        // Do NOT automatically change quadrant when urgent/important flags change
-        // Tasks can only move between quadrants via drag and drop
-        
-        updatedTask.updatedAt = new Date().toISOString();
-        state.tasks[taskIndex] = updatedTask;
-        state.error = null;
-        saveTasksToStorage(state.tasks);
-      } catch (error) {
-        state.error = 'Failed to update task. Please try again.';
-        console.error('Error updating task:', error);
-      }
-    },
-
-    deleteTask: (state, action: PayloadAction<string>) => {
-      state.tasks = state.tasks.filter(task => task.id !== action.payload);
-      saveTasksToStorage(state.tasks);
-    },
-
-    moveTaskToQuadrant: (state, action: PayloadAction<{ id: string; quadrant: TaskQuadrant }>) => {
-      const { id, quadrant } = action.payload;
-      const task = state.tasks.find(task => task.id === id);
-      
-      if (task) {
-        task.quadrant = quadrant;
-        task.updatedAt = new Date().toISOString();
-        
-        // Update urgent/important flags based on quadrant
-        switch (quadrant) {
-          case 'DO':
-            task.urgent = true;
-            task.important = true;
-            break;
-          case 'SCHEDULE':
-            task.urgent = false;
-            task.important = true;
-            break;
-          case 'DELEGATE':
-            task.urgent = true;
-            task.important = false;
-            break;
-          case 'DELETE':
-            task.urgent = false;
-            task.important = false;
-            break;
-          case 'UNASSIGNED':
-            // Keep existing flags for unassigned tasks
-            break;
-        }
-        
-        saveTasksToStorage(state.tasks);
-      }
-    },
-
-    clearAllTasks: (state) => {
-      state.tasks = [];
-      saveTasksToStorage(state.tasks);
-    },
-
+    // Synchronous actions for immediate UI updates
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-
+    
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-
+    
     clearError: (state) => {
       state.error = null;
     },
 
-    toggleTaskCompletion: (state, action: PayloadAction<string>) => {
-      const task = state.tasks.find(task => task.id === action.payload);
-      
-      if (task) {
-        const now = new Date().toISOString();
-        task.completed = !task.completed;
-        task.completedAt = task.completed ? now : undefined;
-        task.updatedAt = now;
-        saveTasksToStorage(state.tasks);
+    // Local task updates for optimistic updates
+    updateTaskLocal: (state, action: PayloadAction<Task>) => {
+      const index = state.tasks.findIndex(task => task.id === action.payload.id);
+      if (index !== -1) {
+        state.tasks[index] = action.payload;
       }
     },
 
-    loadDemoTasks: (state) => {
-      state.tasks = loadDemoData();
-      saveTasksToStorage(state.tasks);
+    // Add task locally for optimistic updates
+    addTaskLocal: (state, action: PayloadAction<Task>) => {
+      state.tasks.push(action.payload);
     },
+
+    // Remove task locally for optimistic updates
+    removeTaskLocal: (state, action: PayloadAction<string>) => {
+      state.tasks = state.tasks.filter(task => task.id !== action.payload);
+    },
+  },
+  extraReducers: (builder) => {
+    // Fetch Tasks
+    builder
+      .addCase(fetchTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Create Task
+    builder
+      .addCase(createTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createTask.fulfilled, (state, action) => {
+        state.loading = false;
+        // Add the new task to the state
+        state.tasks.push(action.payload);
+        state.error = null;
+      })
+      .addCase(createTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Update Task
+    builder
+      .addCase(updateTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTask.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update the task in state
+        const index = state.tasks.findIndex(task => task.id === action.payload.id);
+        if (index !== -1) {
+          state.tasks[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(updateTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Delete Task
+    builder
+      .addCase(deleteTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.loading = false;
+        // Remove the task from state
+        state.tasks = state.tasks.filter(task => task.id !== action.payload);
+        state.error = null;
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Move Task to Quadrant
+    builder
+      .addCase(moveTaskToQuadrant.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(moveTaskToQuadrant.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update the task in state
+        const index = state.tasks.findIndex(task => task.id === action.payload.id);
+        if (index !== -1) {
+          state.tasks[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(moveTaskToQuadrant.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Toggle Task Completion
+    builder
+      .addCase(toggleTaskCompletion.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleTaskCompletion.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update the task in state
+        const index = state.tasks.findIndex(task => task.id === action.payload.id);
+        if (index !== -1) {
+          state.tasks[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(toggleTaskCompletion.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Clear All Tasks
+    builder
+      .addCase(clearAllTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(clearAllTasks.fulfilled, (state) => {
+        state.loading = false;
+        state.tasks = [];
+        state.error = null;
+      })
+      .addCase(clearAllTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Load Demo Tasks
+    builder
+      .addCase(loadDemoTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadDemoTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = action.payload;
+        state.error = null;
+      })
+      .addCase(loadDemoTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
+// Export synchronous actions
 export const {
-  addTask,
-  updateTask,
-  deleteTask,
-  moveTaskToQuadrant,
-  clearAllTasks,
   setLoading,
   setError,
   clearError,
-  toggleTaskCompletion,
-  loadDemoTasks,
+  updateTaskLocal,
+  addTaskLocal,
+  removeTaskLocal,
 } = tasksSlice.actions;
+
+// Legacy action names for backward compatibility with existing components
+export const addTask = createTask;
 
 export default tasksSlice.reducer;

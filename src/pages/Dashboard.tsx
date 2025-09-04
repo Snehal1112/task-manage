@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { useAppSelector } from '@/app/hooks';
+import React, { useState, useRef, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { selectTasksCount } from '@/features/tasks/tasksSelectors';
+import { fetchTasks } from '@/features/tasks/tasksSlice';
 import { Task } from '@/features/tasks/TaskTypes';
 import DragDropWrapper from '@/components/DragDropWrapper';
 import TaskList, { TaskListRef } from '@/components/TaskList';
@@ -9,11 +10,17 @@ import TaskForm from '@/components/TaskForm';
 import KeyboardShortcuts from '@/components/KeyboardShortcuts';
 
 const Dashboard: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const totalTasks = useAppSelector(selectTasksCount);
   const taskListRef = useRef<TaskListRef>(null);
+
+  // Fetch tasks when component mounts
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
 
   const handleAddTask = () => {
     setEditingTask(undefined);

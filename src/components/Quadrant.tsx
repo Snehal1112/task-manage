@@ -9,6 +9,7 @@ import TaskCard from './TaskCard';
 import { useDragContext } from '@/hooks/useDragContext';
 import { AlertCircle, Calendar, Users, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface QuadrantProps {
   quadrant: TaskQuadrant;
@@ -100,22 +101,22 @@ const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTas
         colors.border,
         'border'
       )}>
-        <CardHeader className={cn('py-2.5 px-3 border-b flex-shrink-0', colors.header)}>
+        <CardHeader className={cn('py-3 px-4 border-b flex-shrink-0', colors.header)}>
           <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon className={cn('h-4 w-4', colors.icon)} />
-              <span className="font-bold text-sm truncate">
+            <div className="flex items-center gap-3">
+              <Icon className={cn(CONTEXT_ICON_SIZES.cardHeaderIcon, colors.icon)} />
+              <span className="font-bold text-sm lg:text-base tracking-tight">
                 {QUADRANT_LABELS[quadrant]}
               </span>
             </div>
             <div className={cn(
-              'px-2 py-1 rounded-full text-xs font-bold flex-shrink-0 min-w-[24px] text-center',
+              'px-3 py-1.5 rounded-full text-sm font-bold flex-shrink-0 min-w-[28px] text-center',
               tasks.length > 0 ? colors.bg + ' ' + colors.icon : 'bg-gray-100 text-gray-500'
             )}>
               {tasks.length}
             </div>
           </CardTitle>
-          <p className={cn('text-xs font-medium opacity-90 leading-relaxed mt-1', colors.icon)}>
+          <p className={cn('text-sm font-medium opacity-90 leading-relaxed mt-2', colors.icon)}>
             {QUADRANT_DESCRIPTIONS[quadrant]}
           </p>
         </CardHeader>
@@ -136,29 +137,29 @@ const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTas
               scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
             }}
           >
-            {/* Enhanced Drop placeholder */}
+            {/* Enhanced Drop placeholder with Better Typography */}
             {isBeingDraggedOver && (
               <div className="absolute inset-3 border-2 border-dashed border-primary/60 rounded-lg bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 animate-pulse">
                 <div className="text-center">
                   <div className={cn(
-                    'w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center',
+                    'w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center',
                     colors.bg, colors.icon
                   )}>
-                    <Icon className="h-5 w-5" />
+                    <Icon className={CONTEXT_ICON_SIZES.quadrantBadgeIcon} />
                   </div>
-                  <p className="text-sm font-semibold text-gray-800">{QUADRANT_LABELS[quadrant]}</p>
-                  <p className="text-xs text-gray-600 mt-1">Drop task here</p>
+                  <p className="text-base font-bold text-gray-800 tracking-tight">{QUADRANT_LABELS[quadrant]}</p>
+                  <p className="text-sm font-medium text-gray-600 mt-1">Drop task here</p>
                 </div>
               </div>
             )}
 
-            {/* Empty state */}
+            {/* Enhanced empty state with Better Typography */}
             {tasks.length === 0 && !isBeingDraggedOver && (
               <div className="h-full flex items-center justify-center text-center">
                 <div className="text-muted-foreground">
-                  <Icon className={cn('h-8 w-8 mx-auto mb-2 opacity-30', colors.icon)} />
-                  <p className="text-sm font-medium opacity-60">No tasks yet</p>
-                  <p className="text-xs opacity-40 mt-1">Drag tasks here</p>
+                  <Icon className={cn(CONTEXT_ICON_SIZES.quadrantEmptyIcon + ' mx-auto mb-3 opacity-30', colors.icon)} />
+                  <p className="text-base font-semibold opacity-60">No tasks yet</p>
+                  <p className="text-sm opacity-40 mt-1">Drag tasks here</p>
                 </div>
               </div>
             )}

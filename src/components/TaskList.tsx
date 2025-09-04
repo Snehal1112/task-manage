@@ -11,6 +11,7 @@ import TaskCard from './TaskCard';
 import { useDragContext } from '@/hooks/useDragContext';
 import { Plus, Inbox, Search, Filter, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface TaskFilters {
   search: string;
@@ -166,14 +167,14 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
       <CardHeader className="pb-4"> {/* Increased bottom padding for better spacing */}
         <div className="flex items-center justify-between mb-4"> {/* Added margin-bottom for spacing */}
           <CardTitle className="flex items-center gap-2">
-            <Inbox className="h-5 w-5" />
+            <Inbox className={CONTEXT_ICON_SIZES.cardHeaderIcon} />
             Task Panel
             <span className="text-sm font-normal text-muted-foreground">
               ({displayTasks.length})
             </span>
           </CardTitle>
           <Button onClick={onAddTask} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className={`${CONTEXT_ICON_SIZES.primaryButton} mr-2`} />
             Add Task
           </Button>
         </div>
@@ -182,7 +183,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
         <div className="space-y-4 pt-3"> {/* Adjusted spacing between sections */}
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className={cn(CONTEXT_ICON_SIZES.searchIcon, "absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground")} />
             <Input
               ref={searchInputRef}
               type="text"
@@ -199,7 +200,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
                 onClick={() => updateFilter('search', '')}
                 className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
               >
-                <X className="h-3 w-3" />
+                <X className={CONTEXT_ICON_SIZES.clearIcon} />
               </Button>
             )}
           </div>
@@ -213,7 +214,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
               className="flex items-center gap-2 h-8"
               aria-expanded={showFilters}
             >
-              <Filter className="h-3 w-3" />
+              <Filter className={CONTEXT_ICON_SIZES.filterIcon} />
               Filters
               {hasActiveFilters && (
                 <span className="bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-xs">

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Save, X } from 'lucide-react';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface TaskFormProps {
   task?: Task;
@@ -19,7 +20,7 @@ interface TaskFormProps {
 const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
   const dispatch = useAppDispatch();
   const error = useAppSelector(selectTasksError);
-  
+
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
@@ -32,10 +33,19 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
   // Update form data when task prop changes (for editing)
   useEffect(() => {
     if (task) {
+      // Convert ISO date to YYYY-MM-DD format for input[type="date"]
+      let formattedDate = '';
+      if (task.dueDate) {
+        const date = new Date(task.dueDate);
+        if (!isNaN(date.getTime())) {
+          formattedDate = date.toISOString().split('T')[0];
+        }
+      }
+
       setFormData({
         title: task.title,
         description: task.description || '',
-        dueDate: task.dueDate || '',
+        dueDate: formattedDate,
         urgent: task.urgent,
         important: task.important,
         completed: task.completed,
@@ -54,20 +64,29 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) return;
 
+    // Convert date to ISO format if provided
+    let dueDate = formData.dueDate;
+    if (dueDate) {
+      const date = new Date(dueDate + 'T23:59:59.000Z');
+      dueDate = date.toISOString();
+    }
+
+    const taskData = {
+      ...formData,
+      title: formData.title.trim(),
+      dueDate: dueDate || undefined,
+    };
+
     if (task) {
-      dispatch(updateTask({ 
-        id: task.id, 
-        ...formData,
-        title: formData.title.trim()
+      dispatch(updateTask({
+        id: task.id,
+        updates: taskData
       }));
     } else {
-      dispatch(addTask({
-        ...formData,
-        title: formData.title.trim()
-      }));
+      dispatch(addTask(taskData));
     }
 
     onClose();
@@ -104,18 +123,18 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
           <DialogTitle className="flex items-center gap-2">
             {task ? (
               <>
-                <Save className="h-5 w-5" />
+                <Save className={CONTEXT_ICON_SIZES.formButton} />
                 Edit Task
               </>
             ) : (
               <>
-                <Plus className="h-5 w-5" />
+                <Plus className={CONTEXT_ICON_SIZES.formButton} />
                 Add New Task
               </>
             )}
           </DialogTitle>
         </DialogHeader>
-        
+
         {error && (
           <div className="px-6 py-2">
             <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
@@ -123,7 +142,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
             </div>
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -197,18 +216,18 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
               variant="outline"
               onClick={handleClose}
             >
-              <X className="h-4 w-4 mr-2" />
+              <X className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
               Cancel
             </Button>
             <Button type="submit">
               {task ? (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
                   Update Task
                 </>
               ) : (
                 <>
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
                   Add Task
                 </>
               )}

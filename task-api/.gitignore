@@ -1,0 +1,13 @@
+# Binaries
+task-api
+main
+
+# Data and encrypted files
+data/
+*.enc
+
+# Go build cache
+.cache/
+
+# Environment files
+.env
