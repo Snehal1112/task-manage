@@ -101,22 +101,22 @@ const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTas
         colors.border,
         'border'
       )}>
-        <CardHeader className={cn('py-3 px-4 border-b flex-shrink-0', colors.header)}>
+        <CardHeader className={cn('py-2 lg:py-4 px-3 lg:px-6 border-b flex-shrink-0', colors.header)}>
           <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 lg:gap-4">
               <Icon className={cn(CONTEXT_ICON_SIZES.cardHeaderIcon, colors.icon)} />
-              <span className="font-bold text-base tracking-tight">
+              <span className="font-bold text-sm lg:text-base tracking-tight">
                 {QUADRANT_LABELS[quadrant]}
               </span>
             </div>
             <div className={cn(
-              'px-3 py-1.5 rounded-full text-sm font-bold flex-shrink-0 min-w-[28px] text-center',
+              'px-2 lg:px-4 py-1 lg:py-2 rounded-full text-xs lg:text-sm font-bold flex-shrink-0 min-w-[24px] lg:min-w-[32px] text-center',
               tasks.length > 0 ? colors.bg + ' ' + colors.icon : 'bg-gray-100 text-gray-500'
             )}>
               {tasks.length}
             </div>
           </CardTitle>
-          <p className={cn('text-sm font-medium opacity-90 leading-relaxed mt-2', colors.icon)}>
+          <p className={cn('text-xs lg:text-sm font-medium opacity-90 leading-relaxed mt-1 lg:mt-3', colors.icon)}>
             {QUADRANT_DESCRIPTIONS[quadrant]}
           </p>
         </CardHeader>
@@ -126,7 +126,7 @@ const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTas
             ref={setNodeRef}
             className={cn(
               "h-full w-full transition-all duration-300 relative overflow-y-auto overflow-x-hidden",
-              "p-3 scrollbar-hover",
+              "p-2 lg:p-4 scrollbar-hover",
               colors.bg,
               isDragActive && !isBeingDraggedOver && "bg-opacity-60",
               isBeingDraggedOver && "bg-white/90 ring-2 ring-primary/40 ring-inset",

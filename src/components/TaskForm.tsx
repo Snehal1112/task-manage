@@ -20,7 +20,7 @@ interface TaskFormProps {
 const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
   const dispatch = useAppDispatch();
   const error = useAppSelector(selectTasksError);
-  
+
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
@@ -55,12 +55,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) return;
 
     if (task) {
-      dispatch(updateTask({ 
-        id: task.id, 
+      dispatch(updateTask({
+        id: task.id,
         ...formData,
         title: formData.title.trim()
       }));
@@ -100,9 +100,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onClose={handleClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+      <DialogContent className="sm:max-w-md lg:max-w-2xl">
+        <DialogHeader className="pb-2 lg:pb-4">
+          <DialogTitle className="flex items-center gap-2 lg:gap-3 text-lg lg:text-xl">
             {task ? (
               <>
                 <Save className={CONTEXT_ICON_SIZES.formButton} />
@@ -116,7 +116,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
             )}
           </DialogTitle>
         </DialogHeader>
-        
+
         {error && (
           <div className="px-6 py-2">
             <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
@@ -124,10 +124,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
             </div>
           </div>
         )}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-6 p-1 lg:p-2">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm lg:text-base font-medium mb-1 lg:mb-2">
               Task Title *
             </label>
             <Input
@@ -137,17 +137,19 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
               placeholder="Enter task title..."
               required
               autoFocus
+              className="text-sm lg:text-base h-9 lg:h-11"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm lg:text-base font-medium mb-1 lg:mb-2">
               Description
             </label>
             <Textarea
               value={formData.description}
               onChange={(e) => updateFormData('description', e.target.value)}
               placeholder="Optional task description..."
+              className="text-sm lg:text-base min-h-[60px] lg:min-h-[80px]"
               rows={3}
             />
           </div>
@@ -192,24 +194,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
             />
           </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
+          <div className="flex justify-end space-x-2 lg:space-x-3 pt-3 lg:pt-6">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
+              className="px-3 lg:px-6 h-9 lg:h-11 text-sm lg:text-base"
             >
-              <X className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
+              <X className={`${CONTEXT_ICON_SIZES.formButton} mr-1 lg:mr-2`} />
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="px-4 lg:px-8 h-9 lg:h-11 text-sm lg:text-base">
               {task ? (
                 <>
-                  <Save className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
+                  <Save className={`${CONTEXT_ICON_SIZES.formButton} mr-1 lg:mr-2`} />
                   Update Task
                 </>
               ) : (
                 <>
-                  <Plus className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
+                  <Plus className={`${CONTEXT_ICON_SIZES.formButton} mr-1 lg:mr-2`} />
                   Add Task
                 </>
               )}

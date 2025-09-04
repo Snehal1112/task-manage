@@ -90,11 +90,11 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
         task.quadrant === 'DELETE' && "border-l-gray-500 bg-gray-50/50",
         !isDragging && !isDragOverlay && "hover:scale-102 hover:shadow-lg"
       )}>
-        <CardContent className="p-3">
-          <div className="space-y-2">
-            <div className="flex items-start justify-between gap-2">
+        <CardContent className="p-2 lg:p-4">
+          <div className="space-y-1 lg:space-y-3">
+            <div className="flex items-start justify-between gap-1 lg:gap-3">
               <h3 className={cn(
-                "font-bold text-base leading-tight flex-1 min-w-0 break-words tracking-tight",
+                "font-bold text-sm lg:text-base leading-tight flex-1 min-w-0 break-words tracking-tight",
                 task.completed && "line-through text-muted-foreground"
               )}>
                 <span className="block truncate">{task.title}</span>
@@ -111,29 +111,30 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
             {task.description && (
               <div className="min-w-0">
-                <p className="text-sm font-medium text-muted-foreground leading-relaxed break-words">
+                <p className="text-xs lg:text-sm font-medium text-muted-foreground leading-relaxed break-words">
                   <span className="line-clamp-2">{task.description}</span>
                 </p>
               </div>
             )}
 
             {task.dueDate && (
-              <div className="text-sm font-medium text-muted-foreground">
-                <Calendar className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "inline-block mr-1.5")} />
+              <div className="text-xs lg:text-sm font-medium text-muted-foreground">
+                <Calendar className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "inline-block mr-1 lg:mr-2")} />
                 {formatDate(task.dueDate)}
               </div>
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex items-center justify-between p-3">
-          <Button variant="ghost" size="sm" onClick={handleEdit} className="text-sm font-medium">
-            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1.5")} /> Edit
+        <CardFooter className="flex items-center justify-between p-2 lg:p-4">
+          <Button variant="ghost" size="sm" onClick={handleEdit} className="text-xs lg:text-sm font-medium px-2 lg:px-3">
+            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 lg:mr-2")} /> 
+            <span className="hidden lg:inline">Edit</span>
           </Button>
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" onClick={handleToggleCompletion}>
+          <div className="flex items-center space-x-1 lg:space-x-2">
+            <Button variant="ghost" size="sm" onClick={handleToggleCompletion} className="p-1 lg:p-2">
               {task.completed ? <Check className={CONTEXT_ICON_SIZES.taskActionIcon} /> : <Target className={CONTEXT_ICON_SIZES.taskActionIcon} />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleDelete}>
+            <Button variant="ghost" size="sm" onClick={handleDelete} className="p-1 lg:p-2">
               <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} />
             </Button>
           </div>

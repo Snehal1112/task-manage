@@ -25,8 +25,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { 
-      hasError: false, 
+    this.state = {
+      hasError: false,
       errorId: '',
       retryCount: 0
     };
@@ -34,8 +34,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     const errorId = `error-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    return { 
-      hasError: true, 
+    return {
+      hasError: true,
       error,
       errorId,
     };
@@ -69,7 +69,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       if (this.errorReportingTimeout) {
         clearTimeout(this.errorReportingTimeout);
       }
-      
+
       this.errorReportingTimeout = setTimeout(() => {
         this.reportError(error, errorInfo, errorContext);
       }, 1000);
@@ -91,15 +91,15 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       componentStack: errorInfo.componentStack,
       context,
     };
-    
+
     // In production, send to error reporting service
     console.info('Error report prepared:', errorReport);
   };
 
   handleReset = () => {
-    this.setState({ 
-      hasError: false, 
-      error: undefined, 
+    this.setState({
+      hasError: false,
+      error: undefined,
       errorInfo: undefined,
       retryCount: this.state.retryCount + 1
     });
@@ -169,7 +169,7 @@ ${errorDetails.stack}
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  {isIsolated 
+                  {isIsolated
                     ? 'This component encountered an error, but the rest of the application should continue working.'
                     : 'An unexpected error occurred. Please try one of the recovery options below.'
                   }
@@ -207,10 +207,10 @@ ${errorDetails.stack}
                     <RefreshCw className={`${CONTEXT_ICON_SIZES.secondaryButton} mr-2`} />
                     Try Again
                   </Button>
-                  
+
                   {!isIsolated && (
-                    <Button 
-                      onClick={() => window.location.reload()} 
+                    <Button
+                      onClick={() => window.location.reload()}
                       size="sm"
                     >
                       Reload Page
@@ -224,18 +224,18 @@ ${errorDetails.stack}
                       Still having trouble? Try these recovery options:
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Button 
+                      <Button
                         onClick={this.handleClearStorage}
-                        variant="outline" 
+                        variant="outline"
                         size="sm"
                         className="text-xs"
                       >
                         <Database className={`${CONTEXT_ICON_SIZES.clearIcon} mr-2`} />
                         Clear Data
                       </Button>
-                      <Button 
+                      <Button
                         onClick={this.handleReportBug}
-                        variant="outline" 
+                        variant="outline"
                         size="sm"
                         className="text-xs"
                       >
