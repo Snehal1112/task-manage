@@ -163,7 +163,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
 
   return (
     <Card className="h-full"> {/* Added padding to the Card */}
-      <CardHeader className="pb-6"> {/* Increased bottom padding for better spacing */}
+      <CardHeader className="pb-4"> {/* Increased bottom padding for better spacing */}
         <div className="flex items-center justify-between mb-4"> {/* Added margin-bottom for spacing */}
           <CardTitle className="flex items-center gap-2">
             <Inbox className="h-5 w-5" />

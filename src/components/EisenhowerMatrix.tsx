@@ -37,7 +37,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
             <div className="relative mb-2">
               {/* Top axis - Urgency */}
               <div className="flex items-center justify-center mb-2">
-                <div className="flex items-center gap-8">
+                <div className="grid grid-cols-2 gap-8 w-full">
                   <div className="text-center">
                     <div className="text-xs font-bold text-red-700 tracking-wide mb-1">URGENT</div>
                     <div className="w-12 h-0.5 bg-red-600 mx-auto"></div>
@@ -77,33 +77,21 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
               <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 h-full min-h-0 overflow-hidden">
                 {/* Quadrant I: Urgent & Important (DO) */}
                 <div className="relative h-full min-h-0">
-                  <div className="absolute -top-0.5 -left-0.5 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center z-10 shadow-md">
-                    1
-                  </div>
                   <Quadrant quadrant="DO" onEditTask={onEditTask} tasks={tasks} />
                 </div>
 
                 {/* Quadrant II: Not Urgent & Important (SCHEDULE) */}
                 <div className="relative h-full min-h-0">
-                  <div className="absolute -top-0.5 -left-0.5 bg-blue-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center z-10 shadow-md">
-                    2
-                  </div>
                   <Quadrant quadrant="SCHEDULE" onEditTask={onEditTask} tasks={tasks} />
                 </div>
 
                 {/* Quadrant III: Urgent & Not Important (DELEGATE) */}
                 <div className="relative h-full min-h-0">
-                  <div className="absolute -top-0.5 -left-0.5 bg-yellow-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center z-10 shadow-md">
-                    3
-                  </div>
                   <Quadrant quadrant="DELEGATE" onEditTask={onEditTask} tasks={tasks} />
                 </div>
 
                 {/* Quadrant IV: Not Urgent & Not Important (DELETE) */}
                 <div className="relative h-full min-h-0">
-                  <div className="absolute -top-0.5 -left-0.5 bg-gray-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center z-10 shadow-md">
-                    4
-                  </div>
                   <Quadrant quadrant="DELETE" onEditTask={onEditTask} tasks={tasks} />
                 </div>
               </div>
