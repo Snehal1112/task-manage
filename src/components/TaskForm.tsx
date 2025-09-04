@@ -33,10 +33,19 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
   // Update form data when task prop changes (for editing)
   useEffect(() => {
     if (task) {
+      // Convert ISO date to YYYY-MM-DD format for input[type="date"]
+      let formattedDate = '';
+      if (task.dueDate) {
+        const date = new Date(task.dueDate);
+        if (!isNaN(date.getTime())) {
+          formattedDate = date.toISOString().split('T')[0];
+        }
+      }
+
       setFormData({
         title: task.title,
         description: task.description || '',
-        dueDate: task.dueDate || '',
+        dueDate: formattedDate,
         urgent: task.urgent,
         important: task.important,
         completed: task.completed,
@@ -58,17 +67,26 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
 
     if (!formData.title.trim()) return;
 
+    // Convert date to ISO format if provided
+    let dueDate = formData.dueDate;
+    if (dueDate) {
+      const date = new Date(dueDate + 'T23:59:59.000Z');
+      dueDate = date.toISOString();
+    }
+
+    const taskData = {
+      ...formData,
+      title: formData.title.trim(),
+      dueDate: dueDate || undefined,
+    };
+
     if (task) {
       dispatch(updateTask({
         id: task.id,
-        ...formData,
-        title: formData.title.trim()
+        updates: taskData
       }));
     } else {
-      dispatch(addTask({
-        ...formData,
-        title: formData.title.trim()
-      }));
+      dispatch(addTask(taskData));
     }
 
     onClose();
