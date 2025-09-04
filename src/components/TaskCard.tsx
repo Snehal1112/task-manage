@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Calendar, AlertCircle, Target, Check, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface TaskCardProps {
   task: Task;
@@ -100,10 +101,10 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
               </h3>
               <div className="flex items-center space-x-1 flex-shrink-0">
                 {task.completed && (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "text-green-500")} />
                 )}
                 {isOverdue && !task.completed && (
-                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <AlertCircle className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "text-red-500")} />
                 )}
               </div>
             </div>
@@ -118,7 +119,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
             {task.dueDate && (
               <div className="text-sm font-medium text-muted-foreground">
-                <Calendar className="inline-block h-4 w-4 mr-1.5" />
+                <Calendar className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "inline-block mr-1.5")} />
                 {formatDate(task.dueDate)}
               </div>
             )}
@@ -126,14 +127,14 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
         </CardContent>
         <CardFooter className="flex items-center justify-between p-3">
           <Button variant="ghost" size="sm" onClick={handleEdit} className="text-sm font-medium">
-            <Edit className="h-4 w-4 mr-1.5" /> Edit
+            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1.5")} /> Edit
           </Button>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" onClick={handleToggleCompletion}>
-              {task.completed ? <Check className="h-4 w-4" /> : <Target className="h-4 w-4" />}
+              {task.completed ? <Check className={CONTEXT_ICON_SIZES.taskActionIcon} /> : <Target className={CONTEXT_ICON_SIZES.taskActionIcon} />}
             </Button>
             <Button variant="ghost" size="sm" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} />
             </Button>
           </div>
         </CardFooter>

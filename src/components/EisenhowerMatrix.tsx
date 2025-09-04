@@ -3,6 +3,7 @@ import { Task } from '@/features/tasks/TaskTypes';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import Quadrant from './Quadrant';
 import { Target } from 'lucide-react';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface EisenhowerMatrixProps {
   onEditTask: (task: Task) => void;
@@ -17,7 +18,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
         <CardHeader className="py-6 px-6">
           <CardTitle className="flex items-center gap-4 text-2xl">
             <div className="p-3 bg-primary/15 rounded-xl shadow-sm">
-              <Target className="h-7 w-7 text-primary" />
+              <Target className={CONTEXT_ICON_SIZES.mainHeader + " text-primary"} />
             </div>
             <div className="flex-1">
               <div className="text-xl font-bold tracking-tight text-foreground mb-2">Eisenhower Matrix</div>

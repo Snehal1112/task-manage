@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, Filter, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface TaskFilters {
   search: string;
@@ -128,7 +129,7 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
       <div className={cn("space-y-4", className)}>
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className={cn(CONTEXT_ICON_SIZES.searchIcon, "absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground")} />
           <Input
             ref={searchInputRef}
             type="text"
@@ -145,7 +146,7 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
               onClick={() => updateFilter('search', '')}
               className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
             >
-              <X className="h-4 w-4" />
+              <X className={CONTEXT_ICON_SIZES.secondaryButton} />
             </Button>
           )}
         </div>
@@ -160,7 +161,7 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
             aria-expanded={showFilters}
             aria-controls="filter-options"
           >
-            <Filter className="h-4 w-4" />
+            <Filter className={CONTEXT_ICON_SIZES.filterIcon} />
             Filters
             {hasActiveFilters && (
               <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">

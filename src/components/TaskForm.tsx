@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Save, X } from 'lucide-react';
+import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface TaskFormProps {
   task?: Task;
@@ -104,12 +105,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
           <DialogTitle className="flex items-center gap-2">
             {task ? (
               <>
-                <Save className="h-5 w-5" />
+                <Save className={CONTEXT_ICON_SIZES.formButton} />
                 Edit Task
               </>
             ) : (
               <>
-                <Plus className="h-5 w-5" />
+                <Plus className={CONTEXT_ICON_SIZES.formButton} />
                 Add New Task
               </>
             )}
@@ -197,18 +198,18 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
               variant="outline"
               onClick={handleClose}
             >
-              <X className="h-4 w-4 mr-2" />
+              <X className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
               Cancel
             </Button>
             <Button type="submit">
               {task ? (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
                   Update Task
                 </>
               ) : (
                 <>
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
                   Add Task
                 </>
               )}
