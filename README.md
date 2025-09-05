@@ -16,6 +16,8 @@ A modern React-based task management application implementing the **Eisenhower M
 
 ## 🚀 Quick Start
 
+> **For Development**: See [DEVELOPMENT.md](./DEVELOPMENT.md) for comprehensive development environment setup with Caddy, Go backend, and hot reload.
+
 ### Prerequisites
 
 - Node.js 16+ 

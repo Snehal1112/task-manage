@@ -225,4 +225,12 @@ emulator-debug.log*
 # Package manager lockfiles (choose one)
 # package-lock.json  # uncomment if using npm
 # yarn.lock          # uncomment if using pnpm instead of yarn
-# pnpm-lock.yaml     # uncomment if using npm/yarn instead of pnpmdeployment-package/
+# pnpm-lock.yaml     # uncomment if using npm/yarn instead of pnpm
+
+# Deployment artifacts
+deployment-package/
+
+# Development logs and data
+dev-*.log
+task-api/dev-backend.log
+task-api/dev-data/

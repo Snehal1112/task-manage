@@ -1,0 +1,119 @@
+# Task Management Application - Development Caddyfile
+# Serves the React dev server and reverse proxies API calls to Go backend
+# This provides a consistent development experience matching production
+
+# Global configuration for development
+{
+    admin off
+    auto_https off
+    local_certs
+}
+
+# Development server block for port 3000 (common React dev port)
+:3000 {
+    # Serve React development server
+    handle /* {
+        reverse_proxy localhost:5173 {
+            # Vite dev server headers
+            header_up Host {http.reverse_proxy.upstream.hostport}
+            header_up X-Real-IP {http.request.remote.host}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {http.request.scheme}
+        }
+    }
+
+    # Reverse proxy for API calls to Go backend
+    handle /api/* {
+        reverse_proxy localhost:8080 {
+            # Development API headers
+            header_up Host {http.reverse_proxy.upstream.hostport}
+            header_up X-Real-IP {http.request.remote.host}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {http.request.scheme}
+        }
+    }
+
+    # Development-friendly CORS and security headers
+    header {
+        # CORS headers for development
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Requested-With"
+        Access-Control-Allow-Credentials "true"
+
+        # Relaxed security headers for development
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+
+        # Development CSP (more permissive)
+        Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; connect-src 'self' ws: wss: http: https:; img-src 'self' data: https: http:;"
+    }
+
+    # Handle preflight OPTIONS requests
+    @options method OPTIONS
+    handle @options {
+        header Access-Control-Allow-Origin "*"
+        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Requested-With"
+        header Access-Control-Allow-Credentials "true"
+        respond "" 204
+    }
+
+    # Development logging (less verbose)
+    log {
+        output stdout
+        level INFO
+    }
+}
+
+# Alternative development server on port 8090 (matching production)
+:8090 {
+    # Serve React development server
+    handle /* {
+        reverse_proxy localhost:5173 {
+            # Vite dev server headers
+            header_up Host {http.reverse_proxy.upstream.hostport}
+            header_up X-Real-IP {http.request.remote.host}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {http.request.scheme}
+        }
+    }
+
+    # Reverse proxy for API calls to Go backend
+    handle /api/* {
+        reverse_proxy localhost:8080 {
+            # Development API headers
+            header_up Host {http.reverse_proxy.upstream.hostport}
+            header_up X-Real-IP {http.request.remote.host}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {http.request.scheme}
+        }
+    }
+
+    # Development-friendly CORS and security headers (same as above)
+    header {
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Requested-With"
+        Access-Control-Allow-Credentials "true"
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; connect-src 'self' ws: wss: http: https:; img-src 'self' data: https: http:;"
+    }
+
+    @options method OPTIONS
+    handle @options {
+        header Access-Control-Allow-Origin "*"
+        header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Requested-With"
+        header Access-Control-Allow-Credentials "true"
+        respond "" 204
+    }
+
+    log {
+        output stdout
+        level INFO
+    }
+}
