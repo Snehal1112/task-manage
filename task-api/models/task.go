@@ -98,6 +98,23 @@ func validateISO8601DateTime(fl validator.FieldLevel) bool {
 	return err == nil
 }
 
+// determineQuadrantFromFlags determines the correct quadrant based on priority flags
+func determineQuadrantFromFlags(urgent, important bool) TaskQuadrant {
+	switch {
+	case urgent && important:
+		return QuadrantDo         // Urgent + Important = DO
+	case !urgent && important:
+		return QuadrantSchedule   // Not Urgent + Important = SCHEDULE
+	case urgent && !important:
+		return QuadrantDelegate   // Urgent + Not Important = DELEGATE
+	case !urgent && !important:
+		// When no priority flags are set, place in Unassigned for user to categorize
+		return QuadrantUnassigned
+	default:
+		return QuadrantUnassigned // Fallback
+	}
+}
+
 // NewTask creates a new task from form data
 func NewTask(formData TaskFormData) (*Task, error) {
 	// Validate form data
@@ -137,7 +154,7 @@ func NewTask(formData TaskFormData) (*Task, error) {
 		DueDate:     formData.DueDate,
 		Urgent:      formData.Urgent,
 		Important:   formData.Important,
-		Quadrant:    QuadrantUnassigned, // Always start new tasks in unassigned
+		Quadrant:    determineQuadrantFromFlags(formData.Urgent, formData.Important),
 		Completed:   false, // New tasks always start as incomplete
 		CompletedAt: nil,
 		CreatedAt:   now,
