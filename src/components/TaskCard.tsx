@@ -73,14 +73,14 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
       {...attributes}
       {...listeners}
       className={cn(
-        "transition-all duration-300 ease-out w-full",
-        isDragging && !isDragOverlay && "opacity-30 scale-95",
-        isDragOverlay && "rotate-3 scale-105 z-50",
+        "transition-all duration-200 ease-out w-full",
+        isDragging && !isDragOverlay && "opacity-40 scale-98",
+        isDragOverlay && "rotate-2 scale-105 z-50",
         className // Applied custom className
       )}
     >
       <Card className={cn(
-        "cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-300 ease-out",
+        "cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 ease-out",
         isDragging && "shadow-xl ring-2 ring-primary/30 bg-white",
         isDragOverlay && "shadow-2xl ring-2 ring-primary/40",
         task.quadrant !== 'UNASSIGNED' && "border-l-4",

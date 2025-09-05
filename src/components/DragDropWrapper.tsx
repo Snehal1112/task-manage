@@ -100,12 +100,12 @@ const DragDropWrapper: React.FC<DragDropWrapperProps> = ({ children }) => {
         {children}
         <DragOverlay
           dropAnimation={{
-            duration: 300,
-            easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+            duration: 150,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           }}
         >
           {activeTask ? (
-            <div className="rotate-3 scale-105 transition-all duration-200 shadow-2xl ring-2 ring-primary/30 ring-offset-2">
+            <div className="rotate-2 scale-105 transition-all duration-150 shadow-2xl ring-2 ring-primary/30 ring-offset-2">
               <TaskCard
                 task={activeTask}
                 index={-1}

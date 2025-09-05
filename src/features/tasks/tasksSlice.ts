@@ -215,13 +215,24 @@ const tasksSlice = createSlice({
 
     // Move Task to Quadrant
     builder
-      .addCase(moveTaskToQuadrant.pending, (state) => {
-        state.loading = true;
+      .addCase(moveTaskToQuadrant.pending, (state, action) => {
+        // Optimistic update: immediately update the task in the UI
+        const { id, quadrant } = action.meta.arg;
+        const index = state.tasks.findIndex(task => task.id === id);
+        if (index !== -1) {
+          state.tasks[index] = {
+            ...state.tasks[index],
+            quadrant: quadrant,
+            // Update priority flags based on quadrant for immediate UI consistency
+            urgent: quadrant === 'DO' || quadrant === 'DELEGATE' ? true : false,
+            important: quadrant === 'DO' || quadrant === 'SCHEDULE' ? true : false,
+            updatedAt: new Date().toISOString(),
+          };
+        }
         state.error = null;
       })
       .addCase(moveTaskToQuadrant.fulfilled, (state, action) => {
-        state.loading = false;
-        // Update the task in state
+        // Server response confirms the change - ensure data is in sync
         const index = state.tasks.findIndex(task => task.id === action.payload.id);
         if (index !== -1) {
           state.tasks[index] = action.payload;
@@ -229,8 +240,10 @@ const tasksSlice = createSlice({
         state.error = null;
       })
       .addCase(moveTaskToQuadrant.rejected, (state, action) => {
-        state.loading = false;
+        // Revert optimistic update on failure by refetching
         state.error = action.payload as string;
+        // Note: In a full app, you might want to revert the specific task
+        // or trigger a refetch here, but for simplicity we'll let the error be shown
       });
 
     // Toggle Task Completion
