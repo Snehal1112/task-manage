@@ -2,6 +2,18 @@
 
 A modern React-based task management application implementing the **Eisenhower Matrix** method for task prioritization. Features an intuitive drag-and-drop interface with enhanced visual feedback and smooth animations.
 
+## 🚀 Quick Development Start
+
+```bash
+# Complete development environment (recommended)
+yarn install && yarn dev:full
+# → http://localhost:3000
+
+# Simple frontend only
+yarn install && yarn dev  
+# → http://localhost:5173
+```
+
 ![Task Management Screenshot](https://via.placeholder.com/800x400/f3f4f6/374151?text=Task+Management+-+Eisenhower+Matrix)
 
 ## ✨ Features
@@ -14,43 +26,103 @@ A modern React-based task management application implementing the **Eisenhower M
 - **🎨 Modern UI**: Clean, accessible interface built with Tailwind CSS
 - **⚡ Enhanced UX**: Custom scrollbars, smooth animations, and contextual feedback
 
-## 🚀 Quick Start
+## 🚀 Detailed Setup Instructions
 
-> **For Development**: See [DEVELOPMENT.md](./DEVELOPMENT.md) for comprehensive development environment setup with Caddy, Go backend, and hot reload.
+### Development Environment Options
 
-### Prerequisites
+#### Option 1: Complete Development Environment (Recommended)
+Full-stack development with backend API, Caddy proxy, and frontend - matches production setup.
 
-- Node.js 16+ 
-- Yarn or npm
+**Prerequisites:**
+- Node.js 18+
+- Yarn package manager
+- Go 1.19+
+- [Caddy web server](https://caddyserver.com/docs/install)
 
-### Installation
-
-1. Clone the repository:
+**Setup:**
+1. Clone and install:
    ```bash
    git clone <repository-url>
    cd task-manage
-   ```
-
-2. Install dependencies:
-   ```bash
    yarn install
-   # or
-   npm install
    ```
 
-3. Start the development server:
+2. Start complete development environment:
+   ```bash
+   yarn dev:full
+   # or
+   ./dev-start.sh
+   ```
+
+3. Access the application:
+   - **Primary Development**: http://localhost:3000 (recommended)
+   - **Production-like**: http://localhost:8090
+   - **Direct Frontend**: http://localhost:5173
+   - **Direct API**: http://localhost:8080/api
+
+4. Stop when done:
+   ```bash
+   yarn dev:stop
+   # or
+   ./dev-stop.sh
+   ```
+
+#### Option 2: Frontend Only (Simple Setup)
+Traditional React development without backend features.
+
+**Prerequisites:**
+- Node.js 16+
+- Yarn or npm
+
+**Setup:**
+1. Clone and install:
+   ```bash
+   git clone <repository-url>
+   cd task-manage
+   yarn install
+   ```
+
+2. Start frontend only:
    ```bash
    yarn dev
-   # or
-   npm run dev
    ```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser
+3. Open [http://localhost:5173](http://localhost:5173)
+
+### Feature Comparison
+
+| Feature | Complete Environment | Frontend Only |
+|---------|---------------------|---------------|
+| Task Persistence | ✅ Encrypted file storage | ❌ Browser only (localStorage) |
+| Backend API | ✅ Go REST API | ❌ Mock/local data |
+| Production Simulation | ✅ Matches deployment | ❌ Development only |
+| Caddy Proxy | ✅ Unified access | ❌ Direct Vite |
+| Hot Reload | ✅ Frontend + Backend | ✅ Frontend only |
+| CORS Handling | ✅ Automatic | ❌ Browser restrictions |
+| Setup Complexity | Medium (4 deps) | Low (2 deps) |
+
+> **💡 Recommendation**: Use Option 1 for the complete experience with task persistence, encryption, and production-like environment. See [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed development guide.
 
 ## 🛠️ Development Commands
 
+### Complete Development Environment
 ```bash
-# Start development server
+# Start full development stack (Caddy + Backend + Frontend)
+yarn dev:full
+./dev-start.sh
+
+# Stop all development services
+yarn dev:stop
+./dev-stop.sh
+
+# Create production deployment package
+yarn deploy
+./deploy.sh
+```
+
+### Frontend Development
+```bash
+# Start frontend only (Vite dev server)
 yarn dev
 
 # Build for production
@@ -58,25 +130,109 @@ yarn build
 
 # Preview production build
 yarn preview
+```
 
+### Code Quality
+```bash
 # Type checking
 yarn type-check
 
 # Lint code
 yarn lint
 
-# Run all checks (build + lint)
-yarn build && yarn lint
+# Auto-fix lint issues
+yarn lint:fix
+
+# Clean build artifacts
+yarn clean
+```
+
+### Backend Development
+```bash
+# Start backend only (from task-api directory)
+cd task-api && go run .
+
+# With hot reload (requires air: go install github.com/cosmtrek/air@latest)
+cd task-api && air
 ```
 
 ## 🏗️ Tech Stack
 
-- **Frontend**: React 18 + TypeScript
-- **State Management**: Redux Toolkit with localStorage persistence
-- **Drag & Drop**: @dnd-kit (modern, accessible)
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **Build Tool**: Vite
-- **Code Quality**: ESLint + TypeScript strict mode
+### Frontend
+- **React 18** + **TypeScript** - Core framework with strict mode
+- **Redux Toolkit** - State management with async thunks
+- **@dnd-kit** - Modern, accessible drag-and-drop
+- **Tailwind CSS** + **shadcn/ui** - Styling and components
+- **Vite** - Build tool and development server
+
+### Backend (Full Development Environment)
+- **Go** + **Gin** - REST API framework
+- **AES-256-GCM** - Encrypted file storage
+- **CORS** - Cross-origin resource sharing
+- **File-based** - No database required
+
+### Development Infrastructure
+- **Caddy** - Web server and reverse proxy
+- **Hot Reload** - Frontend and backend development
+- **ESLint** + **TypeScript** - Code quality and type checking
+
+## ⚙️ Configuration
+
+### Development Environment
+The complete development environment requires minimal configuration:
+
+1. **Caddy Installation**: Follow [Caddy installation guide](https://caddyserver.com/docs/install)
+2. **Go Installation**: Download from [golang.org](https://golang.org/downloads)
+3. **No additional setup required** - all configuration is included
+
+### Environment Details
+- **Frontend**: Runs on Vite dev server (http://localhost:5173)
+- **Backend API**: Go server with debug mode (http://localhost:8080)
+- **Caddy Proxy**: Unified access on ports 3000 and 8090
+- **Data Storage**: Encrypted files in `task-api/dev-data/`
+- **Logs**: Development logs in `*dev*.log` files
+
+### Production Deployment
+For production deployment:
+```bash
+yarn deploy  # Creates deployment-package/
+```
+See the generated `deployment-package/README.md` for client deployment instructions.
+
+## 🔧 Troubleshooting
+
+### Development Environment Issues
+
+**Port conflicts:**
+```bash
+# Check what's using ports
+lsof -i :3000 :5173 :8080 :8090
+
+# Stop all development services
+yarn dev:stop
+```
+
+**Services not starting:**
+```bash
+# Check logs
+tail -f dev-*.log task-api/dev-backend.log
+
+# Restart environment
+yarn dev:stop && yarn dev:full
+```
+
+**Caddy not installed:**
+```bash
+# Install Caddy (macOS)
+brew install caddy
+
+# Install Caddy (Ubuntu/Debian)
+sudo apt install caddy
+```
+
+**CORS issues in development:**
+- Use the Caddy-proxied URLs (http://localhost:3000)
+- Development Caddy config allows all origins
 
 ## 📱 How to Use
 
