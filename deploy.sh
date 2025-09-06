@@ -154,8 +154,12 @@ build_backend() {
     print_status "Running Go tests..."
     go test -v ./...
     
-    print_status "Building Go binary for production..."
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    # Detect current OS and architecture
+    local target_os=$(go env GOOS)
+    local target_arch=$(go env GOARCH)
+    
+    print_status "Building Go binary for $target_os/$target_arch..."
+    CGO_ENABLED=0 GOOS="$target_os" GOARCH="$target_arch" go build \
         -ldflags="-w -s -X main.version=production -X main.buildTime=$(date -u +%Y%m%d%H%M%S)" \
         -o task-api .
     
@@ -164,7 +168,7 @@ build_backend() {
         exit 1
     fi
     
-    print_success "Backend build completed successfully"
+    print_success "Backend build completed successfully for $target_os/$target_arch"
 }
 
 # Function to create deployment structure
@@ -860,9 +864,9 @@ main() {
     echo -e "${PURPLE}"
     echo "╔══════════════════════════════════════════════════════════════════════════════╗"
     echo "║                    Task Management Application                               ║"
-    echo "║                         Deployment Script                                   ║"
+    echo "║                         Deployment Script                                    ║"
     echo "║                                                                              ║"
-    echo "║  This script creates a complete production deployment package               ║"
+    echo "║  This script creates a complete production deployment package                ║"
     echo "╚══════════════════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}\n"
     
