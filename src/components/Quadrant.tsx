@@ -95,28 +95,28 @@ const Quadrant = memo<QuadrantProps>(({ quadrant, onEditTask, tasks: externalTas
   if (quadrant === 'UNASSIGNED') return null;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col" role="region" aria-label={`${QUADRANT_LABELS[quadrant]} quadrant`}>
       <Card className={cn(
-        'h-full flex flex-col transition-all duration-200 hover:shadow-md',
+        'h-full flex flex-col transition-all duration-200 hover:shadow-md focus-within:ring-2 focus-within:ring-primary/50',
         colors.border,
         'border'
       )}>
-        <CardHeader className={cn('py-3 px-4 border-b flex-shrink-0', colors.header)}>
+        <CardHeader className={cn('py-2 sm:py-3 px-2 sm:px-4 border-b flex-shrink-0', colors.header)}>
           <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Icon className={cn(CONTEXT_ICON_SIZES.cardHeaderIcon, colors.icon)} />
-              <span className="font-bold text-sm lg:text-base tracking-tight">
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-3 min-w-0 flex-1">
+              <Icon className={cn(CONTEXT_ICON_SIZES.cardHeaderIcon, colors.icon)} aria-hidden="true" />
+              <span className="font-bold text-xs sm:text-sm md:text-base lg:text-base tracking-tight truncate">
                 {QUADRANT_LABELS[quadrant]}
               </span>
             </div>
             <div className={cn(
-              'px-3 py-1.5 rounded-full text-sm font-bold flex-shrink-0 min-w-[28px] text-center',
+              'px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 rounded-full text-xs sm:text-sm font-bold flex-shrink-0 min-w-[20px] sm:min-w-[24px] md:min-w-[28px] text-center',
               tasks.length > 0 ? colors.bg + ' ' + colors.icon : 'bg-gray-100 text-gray-500'
-            )}>
+            )} aria-label={`${tasks.length} tasks in ${QUADRANT_LABELS[quadrant]} quadrant`}>
               {tasks.length}
             </div>
           </CardTitle>
-          <p className={cn('text-sm font-medium opacity-90 leading-relaxed mt-2', colors.icon)}>
+          <p className={cn('text-xs sm:text-sm font-medium opacity-90 leading-relaxed mt-1 sm:mt-2', colors.icon)}>
             {QUADRANT_DESCRIPTIONS[quadrant]}
           </p>
         </CardHeader>

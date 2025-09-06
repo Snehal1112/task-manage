@@ -13,69 +13,52 @@ interface EisenhowerMatrixProps {
 const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }) => {
   return (
     <div className="h-full flex flex-col">
-      {/* Enhanced Header with Improved Typography and Professional Branding */}
-      <Card className="mb-4 shadow-lg">
-        <CardHeader className="py-6 px-6">
-          <CardTitle className="flex items-center gap-4 text-2xl">
-            <div className="p-3 bg-primary/15 rounded-xl shadow-sm">
-              <Target className={CONTEXT_ICON_SIZES.mainHeader + " text-primary"} />
-            </div>
-            <div className="flex-1">
-              <div className="text-xl font-bold tracking-tight text-foreground mb-2">Eisenhower Matrix</div>
-              <div className="text-sm font-medium text-muted-foreground leading-relaxed">
-                Organize by urgency and importance
-              </div>
-            </div>
-          </CardTitle>
-        </CardHeader>
-      </Card>
-
       {/* Matrix Container */}
       <div className="flex-1 min-h-0">
         <Card className="h-full shadow-sm">
           <div className="p-2 h-full flex flex-col">
-            {/* Enhanced Axis Labels with Better Typography */}
-            <div className="relative mb-3">
+            {/* Enhanced Axis Labels with Better Typography - Responsive */}
+            <div className="relative mb-2 sm:mb-3">
               {/* Top axis - Urgency */}
-              <div className="flex items-center justify-center mb-3">
-                <div className="grid grid-cols-2 gap-8 w-full">
+              <div className="flex items-center justify-center mb-2 sm:mb-3">
+                <div className="grid grid-cols-2 gap-4 sm:gap-8 w-full">
                   <div className="text-center">
-                    <div className="text-sm font-bold text-red-700 tracking-wider mb-2 uppercase">Urgent</div>
-                    <div className="w-16 h-0.5 bg-red-600 mx-auto rounded-full"></div>
+                    <div className="text-xs sm:text-sm font-bold text-red-700 tracking-wider mb-1 sm:mb-2 uppercase">Urgent</div>
+                    <div className="w-12 sm:w-16 h-0.5 bg-red-600 mx-auto rounded-full"></div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm font-bold text-blue-700 tracking-wider mb-2 uppercase">Not Urgent</div>
-                    <div className="w-16 h-0.5 bg-blue-600 mx-auto rounded-full"></div>
+                    <div className="text-xs sm:text-sm font-bold text-blue-700 tracking-wider mb-1 sm:mb-2 uppercase">Not Urgent</div>
+                    <div className="w-12 sm:w-16 h-0.5 bg-blue-600 mx-auto rounded-full"></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Matrix Grid with Left Axis Integration */}
-            <div className="flex-1 flex gap-2 min-h-0">
-              {/* Enhanced Left Axis Labels with Better Typography */}
-              <div className="flex flex-col justify-between min-w-[60px]">
+            {/* Matrix Grid with Left Axis Integration - Responsive */}
+            <div className="flex-1 flex gap-1 sm:gap-2 min-h-0">
+              {/* Enhanced Left Axis Labels with Better Typography - Hidden on very small screens */}
+              <div className="hidden xs:flex sm:flex flex-col justify-between min-w-[40px] sm:min-w-[60px]">
                 {/* Important Label */}
-                <div className="flex-1 flex items-center justify-center py-2">
+                <div className="flex-1 flex items-center justify-center py-1 sm:py-2">
                   <div className="text-center">
-                    <div className="text-sm font-bold text-green-700 -rotate-90 whitespace-nowrap tracking-wider uppercase">
+                    <div className="text-xs sm:text-sm font-bold text-green-700 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
                       Important
                     </div>
                   </div>
                 </div>
 
                 {/* Not Important Label */}
-                <div className="flex-1 flex items-center justify-center py-2">
+                <div className="flex-1 flex items-center justify-center py-1 sm:py-2">
                   <div className="text-center">
-                    <div className="text-sm font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase">
+                    <div className="text-xs sm:text-sm font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
                       Not Important
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Matrix Grid */}
-              <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 h-full min-h-0 overflow-hidden">
+              {/* Matrix Grid - Responsive with better mobile layout */}
+              <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1 sm:gap-2 lg:gap-4 h-full min-h-0 overflow-hidden">
                 {/* Quadrant I: Urgent & Important (DO) */}
                 <div className="relative h-full min-h-0">
                   <Quadrant quadrant="DO" onEditTask={onEditTask} tasks={tasks} />
@@ -98,24 +81,24 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
               </div>
             </div>
 
-            {/* Enhanced Legend with Better Typography */}
-            <div className="mt-2 pt-3 border-t">
-              <div className="grid grid-cols-4 gap-2 p-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-sm font-semibold text-foreground">1. Do First</span>
+            {/* Enhanced Legend with Better Typography - Responsive */}
+            <div className="mt-2 pt-2 sm:pt-3 border-t">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2 sm:p-4">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                  <span className="text-xs sm:text-sm font-semibold text-foreground">1. Do First</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm font-semibold text-foreground">2. Schedule</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full"></div>
+                  <span className="text-xs sm:text-sm font-semibold text-foreground">2. Schedule</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm font-semibold text-foreground">3. Delegate</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full"></div>
+                  <span className="text-xs sm:text-sm font-semibold text-foreground">3. Delegate</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                  <span className="text-sm font-semibold text-foreground">4. Delete</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-500 rounded-full"></div>
+                  <span className="text-xs sm:text-sm font-semibold text-foreground">4. Delete</span>
                 </div>
               </div>
             </div>

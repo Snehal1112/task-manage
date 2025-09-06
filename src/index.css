@@ -229,4 +229,132 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* Mobile-specific responsive utilities */
+  @media (max-width: 640px) {
+    .mobile-optimized {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+    
+    .mobile-padding {
+      padding: 0.5rem;
+    }
+    
+    .mobile-margin {
+      margin: 0.5rem;
+    }
+    
+    .mobile-gap {
+      gap: 0.5rem;
+    }
+
+    /* Ensure text doesn't get too small on very small screens */
+    .text-xs {
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+
+    /* Improve touch targets on mobile */
+    button, .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Better spacing for mobile cards */
+    .card-mobile {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Improve matrix layout on mobile */
+    .matrix-mobile {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 0.25rem;
+    }
+
+    /* Better axis labels on mobile */
+    .axis-label-mobile {
+      font-size: 0.6875rem;
+      transform: rotate(-90deg);
+      white-space: nowrap;
+    }
+  }
+
+  /* Extra small screens (320px and below) */
+  @media (max-width: 375px) {
+    .xs\\:text-xs {
+      font-size: 0.6875rem;
+      line-height: 0.875rem;
+    }
+
+    .xs\\:hidden {
+      display: none;
+    }
+
+    .xs\\:flex {
+      display: flex;
+    }
+
+    /* Stack matrix vertically on very small screens */
+    .matrix-xs {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(4, 1fr);
+      gap: 0.125rem;
+    }
+
+    /* Hide axis labels on very small screens */
+    .axis-xs-hidden {
+      display: none;
+    }
+  }
+
+  /* Touch-friendly button sizes for mobile */
+  @media (max-width: 768px) {
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Improve readability on mobile */
+    .mobile-text {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    /* Better focus indicators for accessibility */
+    .focus-visible:focus-visible {
+      outline: 2px solid hsl(var(--primary));
+      outline-offset: 2px;
+    }
+
+    /* Improve contrast for mobile */
+    .mobile-high-contrast {
+      color: hsl(var(--foreground));
+    }
+
+    /* Better spacing for mobile layouts */
+    .mobile-layout {
+      padding: 0.5rem;
+      gap: 0.5rem;
+    }
+  }
+
+  /* Hide scrollbars on mobile but keep functionality */
+  @media (max-width: 768px) {
+    .scrollbar-on-hover {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .scrollbar-on-hover::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Better focus indicators for accessibility */
+    .focus-visible:focus-visible {
+      outline: 2px solid hsl(var(--primary));
+      outline-offset: 2px;
+    }
+  }
 }

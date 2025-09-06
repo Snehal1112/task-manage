@@ -166,11 +166,15 @@ main() {
     
     # Load development environment
     if [ -f "$DEV_CONFIG_DIR/.env.development" ]; then
-        export $(cat "$DEV_CONFIG_DIR/.env.development" | grep -v '^#' | grep -v '^$' | xargs)
+        # Export environment variables for the current shell and subprocesses
+        set -a
+        source "$DEV_CONFIG_DIR/.env.development"
+        set +a
         print_status "Loaded development environment configuration"
     fi
     
     print_status "Starting Go backend API on port 8080..."
+    # Use exec to ensure environment variables are passed to the Go process
     go run . > dev-backend.log 2>&1 &
     BACKEND_PID=$!
     

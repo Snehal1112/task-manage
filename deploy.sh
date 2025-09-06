@@ -292,13 +292,14 @@ EOF
 
     # Create environment file
     print_status "Creating .env.production..."
+    TASK_ENCRYPTION_VALUE=$(openssl rand -base64 32)
     cat > "$BUILD_DIR/.env.production" << 'EOF'
 # Task Management Application - Production Environment
 # This file contains production configuration for the backend API
 
 # REQUIRED: Encryption key for secure data storage (must be 32+ characters)
 # IMPORTANT: Change this to a secure random key for production use
-TASK_ENCRYPTION_KEY=CHANGE-THIS-TO-A-SECURE-32-CHAR-KEY
+TASK_ENCRYPTION_KEY=$TASK_ENCRYPTION_VALUE
 
 # Server Configuration
 PORT=8081

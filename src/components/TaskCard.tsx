@@ -90,11 +90,11 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
         task.quadrant === 'DELETE' && "border-l-gray-500 bg-gray-50/50",
         !isDragging && !isDragOverlay && "hover:scale-102 hover:shadow-lg"
       )}>
-        <CardContent className="p-2 lg:p-4">
-          <div className="space-y-1 lg:space-y-3">
-            <div className="flex items-start justify-between gap-1 lg:gap-3">
+        <CardContent className="p-2 sm:p-4">
+          <div className="space-y-1 sm:space-y-3">
+            <div className="flex items-start justify-between gap-1 sm:gap-3">
               <h3 className={cn(
-                "font-bold text-sm lg:text-base leading-tight flex-1 min-w-0 break-words tracking-tight",
+                "font-bold text-sm sm:text-base leading-tight flex-1 min-w-0 break-words tracking-tight",
                 task.completed && "line-through text-muted-foreground"
               )}>
                 <span className="block truncate">{task.title}</span>
@@ -114,7 +114,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
             {task.description && (
               <div className="min-w-0">
-                <p className="text-xs lg:text-sm font-medium text-muted-foreground leading-relaxed break-words">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-relaxed break-words">
                   <span className="line-clamp-2">{task.description}</span>
                 </p>
               </div>
@@ -122,7 +122,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
             {task.dueDate && (
               <div className={cn(
-                "text-xs lg:text-sm font-medium flex items-center gap-1 lg:gap-2",
+                "text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2",
                 isOverdue && !task.completed
                   ? "text-red-600 font-bold"
                   : "text-muted-foreground"
@@ -142,17 +142,35 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex items-center justify-between p-2 lg:p-4">
-          <Button variant="ghost" size="sm" onClick={handleEdit} className="text-xs lg:text-sm font-medium px-2 lg:px-3">
-            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 lg:mr-2")} />
-            <span className="hidden lg:inline">Edit</span>
+        <CardFooter className="flex items-center justify-between p-2 sm:p-4 pt-0">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleEdit} 
+            className="text-xs sm:text-sm font-medium px-2 sm:px-3 touch-target focus-visible"
+            aria-label={`Edit task: ${task.title}`}
+          >
+            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 sm:mr-2")} aria-hidden="true" />
+            <span className="hidden sm:inline">Edit</span>
           </Button>
-          <div className="flex items-center space-x-1 lg:space-x-2">
-            <Button variant="ghost" size="sm" onClick={handleToggleCompletion} className="p-1 lg:p-2">
-              {task.completed ? <Check className={CONTEXT_ICON_SIZES.taskActionIcon} /> : <Target className={CONTEXT_ICON_SIZES.taskActionIcon} />}
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleToggleCompletion} 
+              className="p-2 sm:p-2 touch-target focus-visible"
+              aria-label={task.completed ? `Mark as incomplete: ${task.title}` : `Mark as complete: ${task.title}`}
+            >
+              {task.completed ? <Check className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" /> : <Target className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleDelete} className="p-1 lg:p-2">
-              <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleDelete} 
+              className="p-2 sm:p-2 touch-target focus-visible"
+              aria-label={`Delete task: ${task.title}`}
+            >
+              <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />
             </Button>
           </div>
         </CardFooter>

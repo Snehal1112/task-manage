@@ -163,24 +163,30 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
   const isDragActive = !!activeId;
 
   return (
-    <Card className="h-full"> {/* Added padding to the Card */}
-      <CardHeader className="pb-4"> {/* Increased bottom padding for better spacing */}
-        <div className="flex items-center justify-between mb-4"> {/* Added margin-bottom for spacing */}
-          <CardTitle className="flex items-center gap-2">
-            <Inbox className={CONTEXT_ICON_SIZES.cardHeaderIcon} />
-            Task Panel
-            <span className="text-sm font-normal text-muted-foreground">
+    <Card className="h-full" role="region" aria-label="Task management panel">
+      <CardHeader className="pb-2 sm:pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2 sm:mb-4">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Inbox className={CONTEXT_ICON_SIZES.cardHeaderIcon} aria-hidden="true" />
+            <span className="truncate">Task Panel</span>
+            <span className="text-xs sm:text-sm font-normal text-muted-foreground" aria-label={`${displayTasks.length} tasks displayed`}>
               ({displayTasks.length})
             </span>
           </CardTitle>
-          <Button onClick={onAddTask} size="sm">
-            <Plus className={`${CONTEXT_ICON_SIZES.primaryButton} mr-2`} />
-            Add Task
+          <Button 
+            onClick={onAddTask} 
+            size="sm" 
+            className="w-full sm:w-auto touch-target focus-visible"
+            aria-label="Add new task"
+          >
+            <Plus className={`${CONTEXT_ICON_SIZES.primaryButton} mr-2`} aria-hidden="true" />
+            <span className="hidden sm:inline">Add Task</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
 
         {/* Integrated Search and Filter */}
-        <div className="space-y-4 pt-3"> {/* Adjusted spacing between sections */}
+        <div className="space-y-3 sm:space-y-4 pt-2 sm:pt-3">
           {/* Search Bar */}
           <div className="relative">
             <Search className={cn(CONTEXT_ICON_SIZES.searchIcon, "absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground")} />
@@ -190,7 +196,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
               placeholder="Search tasks..."
               value={filters.search}
               onChange={(e) => updateFilter('search', e.target.value)}
-              className="pl-10 pr-10 h-9"
+              className="pl-10 pr-10 h-8 sm:h-9 text-sm touch-target"
               aria-label="Search tasks"
             />
             {filters.search && (
@@ -198,7 +204,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
                 variant="ghost"
                 size="sm"
                 onClick={() => updateFilter('search', '')}
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 sm:h-7 w-6 sm:w-7 p-0 touch-target"
               >
                 <X className={CONTEXT_ICON_SIZES.clearIcon} />
               </Button>
@@ -211,13 +217,14 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 h-8"
+              className="flex items-center gap-2 h-7 sm:h-8 text-xs sm:text-sm touch-target"
               aria-expanded={showFilters}
             >
               <Filter className={CONTEXT_ICON_SIZES.filterIcon} />
-              Filters
+              <span className="hidden sm:inline">Filters</span>
+              <span className="sm:hidden">Filter</span>
               {hasActiveFilters && (
-                <span className="bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-xs">
+                <span className="bg-primary text-primary-foreground rounded-full px-1 sm:px-1.5 py-0.5 text-xs">
                   {activeFiltersCount}
                 </span>
               )}
@@ -228,7 +235,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-muted-foreground hover:text-foreground h-8 text-xs"
+                className="text-muted-foreground hover:text-foreground h-7 sm:h-8 text-xs touch-target"
               >
                 Clear all
               </Button>
@@ -237,7 +244,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
 
           {/* Filter Options */}
           {showFilters && (
-            <div className="grid grid-cols-2 gap-3 p-4 bg-muted/50 rounded-lg"> {/* Adjusted padding for better spacing */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 sm:p-4 bg-muted/50 rounded-lg">
               <div className="space-y-2">
                 <label className="text-xs font-medium">Status</label>
                 <Checkbox
@@ -247,7 +254,6 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
                   className="text-xs"
                 />
               </div>
-
               <div className="space-y-2">
                 <label className="text-xs font-medium">Priority</label>
                 <div className="space-y-1">

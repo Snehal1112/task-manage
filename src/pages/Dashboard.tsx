@@ -38,18 +38,18 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-screen bg-background overflow-hidden flex flex-col">
+    <div className="h-screen bg-background overflow-hidden flex flex-col" role="application" aria-label="Task Management Dashboard">
       {/* Header */}
-      <header className="border-b bg-card flex-shrink-0">
-        <div className="container mx-auto px-4 py-2">
+      <header className="border-b bg-card flex-shrink-0" role="banner">
+        <div className="container mx-auto px-2 sm:px-4 py-2">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <h1 className="text-xl font-bold">Task Management</h1>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl font-bold truncate">Task Management</h1>
+              <p className="text-xs text-muted-foreground" aria-live="polite">
                 Eisenhower Matrix - {filteredTasks.length} of {totalTasks} task{totalTasks !== 1 ? 's' : ''} shown
               </p>
             </div>
-            <div className="text-xs text-muted-foreground max-w-sm text-right">
+            <div className="text-xs text-muted-foreground max-w-sm text-right hidden md:block">
               <p className="font-medium mb-0.5">How to use:</p>
               <p className="leading-tight">Create tasks in the Task Panel, then drag them into the appropriate quadrant based on urgency and importance</p>
               <p className="mt-1 text-xs opacity-75">Tip: Press Ctrl+K to search, Ctrl+/ for shortcuts</p>
@@ -59,11 +59,11 @@ const Dashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-2 flex-1 min-h-0">
+      <main className="container mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 flex-1 min-h-0" role="main">
         <DragDropWrapper>
-          <div className="flex flex-col lg:flex-row gap-3 h-full">
+          <div className="flex flex-col lg:flex-row gap-1 sm:gap-2 md:gap-3 h-full">
             {/* Task Panel - Left Column */}
-            <div className="w-full lg:w-1/3 lg:min-w-[280px]">
+            <div className="w-full lg:w-1/3 lg:min-w-[280px] lg:max-w-[400px]">
               <TaskList
                 ref={taskListRef}
                 onAddTask={handleAddTask}
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Eisenhower Matrix - Right Column */}
-            <div className="flex-1 lg:min-w-[450px]">
+            <div className="flex-1 lg:min-w-[400px]">
               <EisenhowerMatrix
                 onEditTask={handleEditTask}
                 tasks={filteredTasks}
