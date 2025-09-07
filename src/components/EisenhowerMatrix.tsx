@@ -37,21 +37,21 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
             {/* Matrix Grid with Left Axis Integration - Responsive */}
             <div className="flex-1 flex gap-1 sm:gap-2 min-h-0">
               {/* Enhanced Left Axis Labels with Better Typography - Hidden on very small screens */}
-              <div className="hidden xs:flex sm:flex flex-col justify-between min-w-[40px] sm:min-w-[60px]">
+              <div className="hidden xs:flex sm:flex flex-col justify-between min-w-[30px] sm:min-w-[45px]">
                 {/* Important Label */}
-                <div className="flex-1 flex items-center justify-center py-1 sm:py-2">
+                <div className="flex-1 flex items-center justify-center py-2 sm:py-3">
                   <div className="text-center">
-                    <div className="text-xs sm:text-sm font-bold text-green-700 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
-                      Important
+                    <div className="text-sm sm:text-base font-bold text-green-700 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
+                      ⭐ Important
                     </div>
                   </div>
                 </div>
 
                 {/* Not Important Label */}
-                <div className="flex-1 flex items-center justify-center py-1 sm:py-2">
+                <div className="flex-1 flex items-center justify-center py-2 sm:py-3">
                   <div className="text-center">
-                    <div className="text-xs sm:text-sm font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
-                      Not Important
+                    <div className="text-sm sm:text-base font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
+                      📝 Not Important
                     </div>
                   </div>
                 </div>

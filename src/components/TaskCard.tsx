@@ -100,7 +100,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
       )}>
         <CardContent className={cn(
           "transition-all duration-300 ease-in-out",
-          isExpanded ? "p-2 sm:p-4" : "p-2 pb-2"
+          isExpanded ? "p-2 sm:p-4" : "p-2 pb-0"
         )}>
           <div className="space-y-1 sm:space-y-3">
             <div className="flex items-start justify-between gap-1 sm:gap-3">
