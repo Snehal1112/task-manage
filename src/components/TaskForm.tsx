@@ -67,10 +67,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
 
     if (!formData.title.trim()) return;
 
-    // Convert date to ISO format if provided
+    // Convert date to ISO format if provided, preserving local timezone
     let dueDate = formData.dueDate;
     if (dueDate) {
-      const date = new Date(dueDate + 'T23:59:59.000Z');
+      // Create date in local timezone to avoid date shifting
+      const date = new Date(dueDate + 'T00:00:00');
       dueDate = date.toISOString();
     }
 
