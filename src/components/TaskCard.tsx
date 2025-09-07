@@ -5,21 +5,25 @@ import { deleteTask, toggleTaskCompletion } from '@/features/tasks/tasksSlice';
 import { Task } from '@/features/tasks/TaskTypes';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Calendar, AlertCircle, Target, Check, CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Edit, Trash2, Calendar, AlertCircle, Target, Check, CheckCircle, ChevronDown, ChevronRight, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
+import TaskDetailModal from './TaskDetailModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 interface TaskCardProps {
   task: Task;
   index: number;
   onEdit: (task: Task) => void;
   isDragOverlay?: boolean;
-  className?: string; // Added optional className prop
+  className?: string;
 }
 
-const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverlay = false, className }) => { // Added className to destructuring
+const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverlay = false, className }) => {
   const dispatch = useAppDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const {
     attributes,
@@ -37,10 +41,12 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
 
   const handleDelete = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${task.title}"?`)) {
-      dispatch(deleteTask(task.id));
-    }
-  }, [dispatch, task.id, task.title]);
+    setShowDeleteModal(true);
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    dispatch(deleteTask(task.id));
+  }, [dispatch, task.id]);
 
   const handleEdit = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -56,6 +62,16 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
     e.stopPropagation();
     setIsExpanded(!isExpanded);
   }, [isExpanded]);
+
+  const handleViewDetails = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDetailModal(true);
+  }, []);
+
+  const handleTitleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDetailModal(true);
+  }, []);
 
   const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
@@ -88,9 +104,9 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
       )}
     >
       <Card className={cn(
-        "cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 ease-out",
-        isDragging && "shadow-xl ring-2 ring-primary/30 bg-white",
-        isDragOverlay && "shadow-2xl ring-2 ring-primary/40",
+        "cursor-grab active:cursor-grabbing hover:shadow-md focus-within:shadow-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-opacity-50 transition-all duration-200 ease-out",
+        isDragging && "shadow-xl ring-2 ring-blue-500/30 bg-white",
+        isDragOverlay && "shadow-2xl ring-2 ring-blue-500/40",
         task.quadrant !== 'UNASSIGNED' && "border-l-4",
         task.quadrant === 'DO' && "border-l-red-500 bg-red-50/50",
         task.quadrant === 'SCHEDULE' && "border-l-blue-500 bg-blue-50/50",
@@ -105,9 +121,14 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
           <div className="space-y-1 sm:space-y-3">
             <div className="flex items-start justify-between gap-1 sm:gap-3">
               <h3 className={cn(
-                "font-bold text-sm sm:text-base leading-tight flex-1 min-w-0 break-words tracking-tight",
-                task.completed && "line-through text-muted-foreground"
-              )}>
+                "font-bold text-sm sm:text-base leading-tight flex-1 min-w-0 break-words tracking-tight cursor-pointer hover:text-blue-700 focus:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-sm transition-colors",
+                task.completed && "line-through text-muted-foreground hover:text-gray-600 focus:text-gray-600"
+              )} onClick={handleTitleClick} tabIndex={0} onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleTitleClick(e as React.MouseEvent<HTMLElement>);
+                }
+              }}>
                 <span className="block truncate">{task.title}</span>
               </h3>
               <div className="flex items-center space-x-1 flex-shrink-0">
@@ -175,39 +196,67 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
         </CardContent>
         {isExpanded && (
           <CardFooter className="flex items-center justify-between p-2 sm:p-4 pt-0">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleEdit} 
-            className="text-xs sm:text-sm font-medium px-2 sm:px-3 touch-target focus-visible"
-            aria-label={`Edit task: ${task.title}`}
-          >
-            <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 sm:mr-2")} aria-hidden="true" />
-            <span className="hidden sm:inline">Edit</span>
-          </Button>
-          <div className="flex items-center space-x-1 sm:space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleToggleCompletion} 
-              className="p-2 sm:p-2 touch-target focus-visible"
-              aria-label={task.completed ? `Mark as incomplete: ${task.title}` : `Mark as complete: ${task.title}`}
-            >
-              {task.completed ? <Check className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" /> : <Target className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />}
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleDelete} 
-              className="p-2 sm:p-2 touch-target focus-visible"
-              aria-label={`Delete task: ${task.title}`}
-            >
-              <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />
-            </Button>
-          </div>
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleViewDetails} 
+                className="text-xs sm:text-sm font-medium px-2 sm:px-3 touch-target focus-visible"
+                aria-label={`View task details: ${task.title}`}
+              >
+                <Eye className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 sm:mr-2")} aria-hidden="true" />
+                <span className="hidden sm:inline">View</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleEdit} 
+                className="text-xs sm:text-sm font-medium px-2 sm:px-3 touch-target focus-visible"
+                aria-label={`Edit task: ${task.title}`}
+              >
+                <Edit className={cn(CONTEXT_ICON_SIZES.taskActionIcon, "mr-1 sm:mr-2")} aria-hidden="true" />
+                <span className="hidden sm:inline">Edit</span>
+              </Button>
+            </div>
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleToggleCompletion} 
+                className="p-2 sm:p-2 touch-target focus-visible"
+                aria-label={task.completed ? `Mark as incomplete: ${task.title}` : `Mark as complete: ${task.title}`}
+              >
+                {task.completed ? <Check className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" /> : <Target className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />}
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleDelete} 
+                className="p-2 sm:p-2 touch-target focus-visible hover:bg-red-100 hover:text-red-800 focus:bg-red-100 focus:text-red-800"
+                aria-label={`Delete task: ${task.title}`}
+              >
+                <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />
+              </Button>
+            </div>
           </CardFooter>
         )}
       </Card>
+      
+      {/* Task Detail Modal */}
+      <TaskDetailModal
+        task={task}
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        onEdit={onEdit}
+      />
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        task={task}
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 });

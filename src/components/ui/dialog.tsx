@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils"
 
 interface DialogProps {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
 }
 
@@ -22,12 +23,27 @@ interface DialogTitleProps {
   children: React.ReactNode;
 }
 
-export const Dialog: React.FC<DialogProps> = ({ open, onClose, children }) => {
+interface DialogDescriptionProps {
+  className?: string;
+  children: React.ReactNode;
+}
+
+interface DialogFooterProps {
+  className?: string;
+  children: React.ReactNode;
+}
+
+export const Dialog: React.FC<DialogProps> = ({ open, onClose, onOpenChange, children }) => {
   if (!open) return null;
+
+  const handleClose = () => {
+    if (onClose) onClose();
+    if (onOpenChange) onOpenChange(false);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/80" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/80" onClick={handleClose} />
       <div className="relative z-50 max-w-lg w-full mx-4">
         {children}
       </div>
@@ -56,4 +72,16 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({ className, children })
   <h3 className={cn("text-lg font-semibold leading-none tracking-tight", className)}>
     {children}
   </h3>
+);
+
+export const DialogDescription: React.FC<DialogDescriptionProps> = ({ className, children }) => (
+  <p className={cn("text-sm text-muted-foreground", className)}>
+    {children}
+  </p>
+);
+
+export const DialogFooter: React.FC<DialogFooterProps> = ({ className, children }) => (
+  <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}>
+    {children}
+  </div>
 );
