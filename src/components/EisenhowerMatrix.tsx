@@ -37,7 +37,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
             {/* Matrix Grid with Left Axis Integration - Responsive */}
             <div className="flex-1 flex gap-1 sm:gap-2 min-h-0">
               {/* Enhanced Left Axis Labels with Better Typography - Hidden on very small screens */}
-              <div className="hidden xs:flex sm:flex flex-col justify-between min-w-[30px] sm:min-w-[45px]">
+              <div className="hidden xs:flex sm:flex flex-col justify-between min-w-[20px] sm:min-w-[30px]">
                 {/* Important Label */}
                 <div className="flex-1 flex items-center justify-center py-2 sm:py-3">
                   <div className="text-center">
@@ -48,7 +48,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
                 </div>
 
                 {/* Not Important Label */}
-                <div className="flex-1 flex items-center justify-center py-2 sm:py-3">
+                <div className="flex-1 flex items-center justify-center">
                   <div className="text-center">
                     <div className="text-sm sm:text-base font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
                       📝 Not Important
@@ -77,28 +77,6 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
                 {/* Quadrant IV: Not Urgent & Not Important (DELETE) */}
                 <div className="relative h-full min-h-0">
                   <Quadrant quadrant="DELETE" onEditTask={onEditTask} tasks={tasks} />
-                </div>
-              </div>
-            </div>
-
-            {/* Enhanced Legend with Better Typography - Responsive */}
-            <div className="mt-2 pt-2 sm:pt-3 border-t">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2 sm:p-4">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-xs sm:text-sm font-semibold text-foreground">1. Do First</span>
-                </div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-xs sm:text-sm font-semibold text-foreground">2. Schedule</span>
-                </div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full"></div>
-                  <span className="text-xs sm:text-sm font-semibold text-foreground">3. Delegate</span>
-                </div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-500 rounded-full"></div>
-                  <span className="text-xs sm:text-sm font-semibold text-foreground">4. Delete</span>
                 </div>
               </div>
             </div>
