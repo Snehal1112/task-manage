@@ -66,6 +66,8 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
 
+
+  
   return (
     <div
       ref={setNodeRef}
