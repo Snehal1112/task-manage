@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Task, TasksState, TaskFormData, TaskQuadrant } from './TaskTypes';
 import { taskAPI } from '@/services/api';
+import { demoTasks } from '@/utils/demoData';
 
 // Initial state with loading and error handling
 const initialState: TasksState = {
@@ -10,12 +11,18 @@ const initialState: TasksState = {
 };
 
 // Async thunks for API operations
+function getDemoTasks(): Task[] {
+  // Provide your demo tasks here or import from a separate file
+  return demoTasks
+}
+
 export const fetchTasks = createAsyncThunk(
   'tasks/fetchTasks',
   async (_, { rejectWithValue }) => {
     try {
       const tasks = await taskAPI.getAllTasks();
-      return tasks;
+      const dummyTasks = getDemoTasks();
+      return tasks.length > 0 ? tasks : dummyTasks;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch tasks');
     }

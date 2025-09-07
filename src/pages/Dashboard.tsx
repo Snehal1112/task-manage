@@ -8,12 +8,15 @@ import TaskList, { TaskListRef } from '@/components/TaskList';
 import EisenhowerMatrix from '@/components/EisenhowerMatrix';
 import TaskForm from '@/components/TaskForm';
 import KeyboardShortcuts from '@/components/KeyboardShortcuts';
+import {loadTasksFromStorage } from '@/utils/storage';
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
+  const demoTask = loadTasksFromStorage();
+  console.log('Loaded tasks from storage:', demoTask);
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(demoTask || []);
   const totalTasks = useAppSelector(selectTasksCount);
   const taskListRef = useRef<TaskListRef>(null);
 

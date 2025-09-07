@@ -1,11 +1,11 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useAppDispatch } from '@/app/hooks';
 import { deleteTask, toggleTaskCompletion } from '@/features/tasks/tasksSlice';
 import { Task } from '@/features/tasks/TaskTypes';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Calendar, AlertCircle, Target, Check, CheckCircle } from 'lucide-react';
+import { Edit, Trash2, Calendar, AlertCircle, Target, Check, CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
@@ -19,6 +19,7 @@ interface TaskCardProps {
 
 const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverlay = false, className }) => { // Added className to destructuring
   const dispatch = useAppDispatch();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const {
     attributes,
@@ -50,6 +51,11 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
     e.stopPropagation();
     dispatch(toggleTaskCompletion(task.id));
   }, [dispatch, task.id]);
+
+  const handleToggleExpand = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  }, [isExpanded]);
 
   const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
@@ -92,7 +98,10 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
         task.quadrant === 'DELETE' && "border-l-gray-500 bg-gray-50/50",
         !isDragging && !isDragOverlay && "hover:scale-102 hover:shadow-lg"
       )}>
-        <CardContent className="p-2 sm:p-4">
+        <CardContent className={cn(
+          "transition-all duration-300 ease-in-out",
+          isExpanded ? "p-2 sm:p-4" : "p-2 pb-2"
+        )}>
           <div className="space-y-1 sm:space-y-3">
             <div className="flex items-start justify-between gap-1 sm:gap-3">
               <h3 className={cn(
@@ -102,6 +111,19 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
                 <span className="block truncate">{task.title}</span>
               </h3>
               <div className="flex items-center space-x-1 flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleToggleExpand}
+                  className="p-1 h-6 w-6 hover:bg-gray-100"
+                  aria-label={isExpanded ? "Collapse task" : "Expand task"}
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="h-3 w-3" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3" />
+                  )}
+                </Button>
                 {task.completed && (
                   <CheckCircle className={cn(CONTEXT_ICON_SIZES.taskStatusIcon, "text-green-500")} />
                 )}
@@ -114,37 +136,45 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
               </div>
             </div>
 
-            {task.description && (
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-relaxed break-words">
-                  <span className="line-clamp-2">{task.description}</span>
-                </p>
-              </div>
-            )}
+            <div
+              className={cn(
+                "transition-all duration-300 ease-in-out overflow-hidden",
+                isExpanded ? "opacity-100 max-h-96" : "opacity-0 max-h-0"
+              )}
+            >
+              {task.description && (
+                <div className="min-w-0 mb-2">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-relaxed break-words">
+                    <span className="line-clamp-2">{task.description}</span>
+                  </p>
+                </div>
+              )}
 
-            {task.dueDate && (
-              <div className={cn(
-                "text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2",
-                isOverdue && !task.completed
-                  ? "text-red-600 font-bold"
-                  : "text-muted-foreground"
-              )}>
-                <Calendar className={cn(
-                  CONTEXT_ICON_SIZES.taskStatusIcon,
-                  "inline-block flex-shrink-0",
-                  isOverdue && !task.completed && "text-red-500"
-                )} />
-                <span className={cn(
-                  "truncate",
-                  isOverdue && !task.completed && "font-bold text-red-600"
+              {task.dueDate && (
+                <div className={cn(
+                  "text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2",
+                  isOverdue && !task.completed
+                    ? "text-red-600 font-bold"
+                    : "text-muted-foreground"
                 )}>
-                  {formatDate(task.dueDate)}
-                </span>
-              </div>
-            )}
+                  <Calendar className={cn(
+                    CONTEXT_ICON_SIZES.taskStatusIcon,
+                    "inline-block flex-shrink-0",
+                    isOverdue && !task.completed && "text-red-500"
+                  )} />
+                  <span className={cn(
+                    "truncate",
+                    isOverdue && !task.completed && "font-bold text-red-600"
+                  )}>
+                    {formatDate(task.dueDate)}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
-        <CardFooter className="flex items-center justify-between p-2 sm:p-4 pt-0">
+        {isExpanded && (
+          <CardFooter className="flex items-center justify-between p-2 sm:p-4 pt-0">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -175,7 +205,8 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
               <Trash2 className={CONTEXT_ICON_SIZES.taskActionIcon} aria-hidden="true" />
             </Button>
           </div>
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );
