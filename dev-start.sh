@@ -44,6 +44,143 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Function to detect OS
+detect_os() {
+    case "$(uname -s)" in
+        Darwin*)
+            echo "macos"
+            ;;
+        Linux*)
+            if [ -f /etc/debian_version ]; then
+                echo "debian"
+            elif [ -f /etc/redhat-release ] || [ -f /etc/centos-release ]; then
+                echo "redhat"
+            elif [ -f /etc/arch-release ]; then
+                echo "arch"
+            else
+                echo "linux"
+            fi
+            ;;
+        CYGWIN*|MINGW32*|MSYS*|MINGW*)
+            echo "windows"
+            ;;
+        *)
+            echo "unknown"
+            ;;
+    esac
+}
+
+# Function to show installation instructions
+show_install_instructions() {
+    local dep="$1"
+    local os="$2"
+    
+    print_status "Installation instructions for $dep:"
+    echo ""
+    
+    case "$dep" in
+        "Go")
+            case "$os" in
+                "macos")
+                    echo "  Option 1 - Using Homebrew (recommended):"
+                    echo "    brew install go"
+                    echo ""
+                    echo "  Option 2 - Download from official site:"
+                    echo "    Visit: https://golang.org/dl/"
+                    echo "    Download the macOS installer and follow the instructions"
+                    ;;
+                "debian")
+                    echo "  Option 1 - Using package manager:"
+                    echo "    sudo apt update"
+                    echo "    sudo apt install golang-go"
+                    echo ""
+                    echo "  Option 2 - Download from official site (latest version):"
+                    echo "    Visit: https://golang.org/dl/"
+                    echo "    wget https://golang.org/dl/go1.21.0.linux-amd64.tar.gz"
+                    echo "    sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz"
+                    echo "    Add to ~/.bashrc: export PATH=\$PATH:/usr/local/go/bin"
+                    ;;
+                "redhat")
+                    echo "  Option 1 - Using package manager:"
+                    echo "    sudo yum install golang  # CentOS 7 / RHEL 7"
+                    echo "    sudo dnf install golang  # CentOS 8+ / Fedora"
+                    echo ""
+                    echo "  Option 2 - Download from official site:"
+                    echo "    Visit: https://golang.org/dl/"
+                    ;;
+                "arch")
+                    echo "  Using package manager:"
+                    echo "    sudo pacman -S go"
+                    ;;
+                "windows")
+                    echo "  Option 1 - Using Chocolatey:"
+                    echo "    choco install golang"
+                    echo ""
+                    echo "  Option 2 - Download from official site:"
+                    echo "    Visit: https://golang.org/dl/"
+                    echo "    Download the Windows installer and follow the instructions"
+                    ;;
+                *)
+                    echo "  Visit: https://golang.org/dl/"
+                    echo "  Download and install the appropriate package for your system"
+                    ;;
+            esac
+            ;;
+        "Caddy")
+            case "$os" in
+                "macos")
+                    echo "  Option 1 - Using Homebrew (recommended):"
+                    echo "    brew install caddy"
+                    echo ""
+                    echo "  Option 2 - Download binary:"
+                    echo "    Visit: https://caddyserver.com/download"
+                    ;;
+                "debian")
+                    echo "  Option 1 - Using official repository:"
+                    echo "    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg"
+                    echo "    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list"
+                    echo "    sudo apt update"
+                    echo "    sudo apt install caddy"
+                    echo ""
+                    echo "  Option 2 - Download binary:"
+                    echo "    Visit: https://caddyserver.com/download"
+                    ;;
+                "redhat")
+                    echo "  Option 1 - Using official repository:"
+                    echo "    dnf install 'dnf-command(copr)'"
+                    echo "    dnf copr enable @caddy/caddy"
+                    echo "    dnf install caddy"
+                    echo ""
+                    echo "  Option 2 - Download binary:"
+                    echo "    Visit: https://caddyserver.com/download"
+                    ;;
+                "arch")
+                    echo "  Using AUR:"
+                    echo "    yay -S caddy"
+                    echo "    # or"
+                    echo "    git clone https://aur.archlinux.org/caddy.git"
+                    echo "    cd caddy && makepkg -si"
+                    ;;
+                "windows")
+                    echo "  Option 1 - Using Chocolatey:"
+                    echo "    choco install caddy"
+                    echo ""
+                    echo "  Option 2 - Using Scoop:"
+                    echo "    scoop install caddy"
+                    echo ""
+                    echo "  Option 3 - Download binary:"
+                    echo "    Visit: https://caddyserver.com/download"
+                    ;;
+                *)
+                    echo "  Visit: https://caddyserver.com/download"
+                    echo "  Download and install the appropriate binary for your system"
+                    ;;
+            esac
+            ;;
+    esac
+    echo ""
+}
+
 # Function to check if port is available
 port_available() {
     ! nc -z localhost "$1" 2>/dev/null
@@ -109,14 +246,20 @@ main() {
     echo "║                    Task Management Application                               ║"
     echo "║                      Development Environment                                 ║"
     echo "║                                                                              ║"
-    echo "║  Starting Caddy + Backend API + Frontend Development Server                ║"
+    echo "║  Starting Caddy + Backend API + Frontend Development Server                  ║"
     echo "╚══════════════════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}\n"
     
     # Check prerequisites
     print_header "Checking Prerequisites"
     
+    # Detect operating system
+    local os=$(detect_os)
+    print_status "Detected OS: $os"
+    
     local missing_deps=()
+    local missing_go=false
+    local missing_caddy=false
     
     if ! command_exists node; then
         missing_deps+=("Node.js")
@@ -128,19 +271,107 @@ main() {
     
     if ! command_exists go; then
         missing_deps+=("Go")
+        missing_go=true
     fi
     
     if ! command_exists caddy; then
         missing_deps+=("Caddy")
+        missing_caddy=true
     fi
     
     if [ ${#missing_deps[@]} -ne 0 ]; then
         print_error "Missing dependencies: ${missing_deps[*]}"
-        print_status "Please install the missing dependencies and try again."
+        echo ""
+        print_status "📋 Installation Guide for Missing Dependencies:"
+        echo ""
+        
+        # Show specific installation instructions for Go and Caddy
+        if [ "$missing_go" = true ]; then
+            show_install_instructions "Go" "$os"
+        fi
+        
+        if [ "$missing_caddy" = true ]; then
+            show_install_instructions "Caddy" "$os"
+        fi
+        
+        # Show instructions for Node.js and Yarn if missing
+        for dep in "${missing_deps[@]}"; do
+            case "$dep" in
+                "Node.js")
+                    print_status "Installation instructions for Node.js:"
+                    echo ""
+                    case "$os" in
+                        "macos")
+                            echo "  Option 1 - Using Homebrew:"
+                            echo "    brew install node"
+                            echo ""
+                            echo "  Option 2 - Using Node Version Manager (recommended):"
+                            echo "    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash"
+                            echo "    nvm install --lts && nvm use --lts"
+                            ;;
+                        "debian"|"redhat")
+                            echo "  Option 1 - Using Node Version Manager (recommended):"
+                            echo "    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash"
+                            echo "    nvm install --lts && nvm use --lts"
+                            echo ""
+                            echo "  Option 2 - Using package manager:"
+                            if [ "$os" = "debian" ]; then
+                                echo "    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -"
+                                echo "    sudo apt-get install -y nodejs"
+                            else
+                                echo "    curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -"
+                                echo "    sudo dnf install nodejs npm"
+                            fi
+                            ;;
+                        "windows")
+                            echo "  Option 1 - Download from official site:"
+                            echo "    Visit: https://nodejs.org/en/download/"
+                            echo ""
+                            echo "  Option 2 - Using Chocolatey:"
+                            echo "    choco install nodejs"
+                            ;;
+                        *)
+                            echo "  Visit: https://nodejs.org/en/download/"
+                            ;;
+                    esac
+                    echo ""
+                    ;;
+                "Yarn")
+                    print_status "Installation instructions for Yarn:"
+                    echo ""
+                    echo "  After installing Node.js, install Yarn:"
+                    echo "    npm install -g yarn"
+                    echo ""
+                    echo "  Or visit: https://yarnpkg.com/getting-started/install"
+                    echo ""
+                    ;;
+            esac
+        done
+        
+        print_status "After installing the missing dependencies, please:"
+        print_status "1. Close and reopen your terminal (or run: source ~/.bashrc)"
+        print_status "2. Verify installations with: go version && caddy version && node --version && yarn --version"
+        print_status "3. Run this script again: ./dev-start.sh"
+        echo ""
         exit 1
     fi
     
     print_success "All prerequisites satisfied"
+    
+    # Show version information
+    print_status "Installed versions:"
+    if command_exists go; then
+        print_status "  Go: $(go version | cut -d' ' -f3)"
+    fi
+    if command_exists caddy; then
+        print_status "  Caddy: $(caddy version | head -1)"
+    fi
+    if command_exists node; then
+        print_status "  Node.js: $(node --version)"
+    fi
+    if command_exists yarn; then
+        print_status "  Yarn: $(yarn --version)"
+    fi
     
     # Check ports availability
     print_header "Checking Port Availability"
@@ -221,12 +452,12 @@ main() {
     print_status ""
     print_status "🌐 Frontend Development URLs:"
     print_status "   - Direct Vite Server: http://localhost:5173"
-    print_status "   - Via Caddy Proxy:    http://localhost:3000"
+    print_success "   ➤ Via Caddy Proxy:    http://localhost:3000  ⭐ RECOMMENDED"
     print_status "   - Production-like:    http://localhost:8090"
     print_status ""
     print_status "🔌 Backend API:"
     print_status "   - Direct Access:      http://localhost:8080/api"
-    print_status "   - Via Caddy Proxy:    http://localhost:3000/api"
+    print_success "   ➤ Via Caddy Proxy:    http://localhost:3000/api  ⭐ RECOMMENDED"
     print_status "   - Health Check:       http://localhost:3000/api/health"
     print_status ""
     print_status "⚙️  Development Tools:"
@@ -239,7 +470,7 @@ main() {
     print_status "   - Frontend:           tail -f dev-frontend.log"
     print_status "   - Caddy:              tail -f dev-caddy.log"
     print_status ""
-    print_status "💡 Recommended: Use http://localhost:3000 for consistent development experience"
+    echo -e "${GREEN}💡 RECOMMENDED:${NC} Use ${GREEN}http://localhost:3000${NC} for consistent development experience"
     print_status ""
     print_status "Press Ctrl+C to stop all development servers"
     
