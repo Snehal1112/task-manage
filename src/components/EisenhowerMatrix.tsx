@@ -41,8 +41,8 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
                 {/* Important Label */}
                 <div className="flex-1 flex items-center justify-center py-2 sm:py-3">
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-bold text-green-700 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
-                      ⭐ Important
+                    <div className="text-sm sm:text-base font-bold text-gray-700 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
+                      Important
                     </div>
                   </div>
                 </div>
@@ -50,8 +50,8 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ onEditTask, tasks }
                 {/* Not Important Label */}
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-bold text-gray-600 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
-                      📝 Not Important
+                    <div className="text-sm sm:text-base font-bold text-gray-700 -rotate-90 whitespace-nowrap tracking-wider uppercase transform origin-center">
+                      Not Important
                     </div>
                   </div>
                 </div>
