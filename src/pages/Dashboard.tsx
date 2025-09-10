@@ -59,7 +59,7 @@ const Dashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 flex-1 min-h-0" role="main">
+      <main className="container mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 flex-1 min-h-0" role="main" id="main-content">
         <DragDropWrapper>
           <div className="flex flex-col lg:flex-row gap-1 sm:gap-2 md:gap-3 h-full">
             {/* Task Panel - Left Column */}

@@ -34,17 +34,65 @@ interface DialogFooterProps {
 }
 
 export const Dialog: React.FC<DialogProps> = ({ open, onClose, onOpenChange, children }) => {
-  if (!open) return null;
+  const dialogRef = React.useRef<HTMLDivElement>(null);
+  const previousFocusRef = React.useRef<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (open) {
+      // Store the currently focused element
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      
+      // Focus the dialog
+      setTimeout(() => {
+        dialogRef.current?.focus();
+      }, 100);
+      
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+      
+      // Add escape key listener
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          handleClose();
+        }
+      };
+      document.addEventListener('keydown', handleEscape);
+      
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+        document.body.style.overflow = '';
+      };
+    } else {
+      // Restore focus when closing
+      if (previousFocusRef.current) {
+        previousFocusRef.current.focus();
+      }
+    }
+  }, [open]);
 
   const handleClose = () => {
     if (onClose) onClose();
     if (onOpenChange) onOpenChange(false);
   };
 
+  if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/80" onClick={handleClose} />
-      <div className="relative z-50 max-w-lg w-full mx-4">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div 
+        className="fixed inset-0 bg-black/80" 
+        onClick={handleClose}
+        aria-hidden="true"
+      />
+      <div 
+        ref={dialogRef}
+        className="relative z-50 max-w-lg w-full mx-4"
+        tabIndex={-1}
+      >
         {children}
       </div>
     </div>
