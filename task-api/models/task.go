@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
@@ -26,7 +27,7 @@ const (
 type Task struct {
 	ID          string       `json:"id" validate:"required"`
 	Title       string       `json:"title" validate:"required,max=100"`
-	Description *string      `json:"description,omitempty" validate:"omitempty,max=500"`
+	Description *string      `json:"description,omitempty" validate:"omitempty,max=2000"`
 	DueDate     *string      `json:"dueDate,omitempty" validate:"omitempty,datetime=2006-01-02T15:04:05.000Z"`
 	Urgent      bool         `json:"urgent"`
 	Important   bool         `json:"important"`
@@ -41,7 +42,7 @@ type Task struct {
 // Matches the TypeScript TaskFormData interface
 type TaskFormData struct {
 	Title       string  `json:"title" validate:"required,max=100"`
-	Description *string `json:"description,omitempty" validate:"omitempty,max=500"`
+	Description *string `json:"description,omitempty" validate:"omitempty,max=2000"`
 	DueDate     *string `json:"dueDate,omitempty" validate:"omitempty,datetime=2006-01-02T15:04:05.000Z"`
 	Urgent      bool    `json:"urgent"`
 	Important   bool    `json:"important"`
@@ -52,7 +53,7 @@ type TaskFormData struct {
 type TaskUpdate struct {
 	ID          string       `json:"id" validate:"required"`
 	Title       *string      `json:"title,omitempty" validate:"omitempty,max=100"`
-	Description *string      `json:"description,omitempty" validate:"omitempty,max=500"`
+	Description *string      `json:"description,omitempty" validate:"omitempty,max=2000"`
 	DueDate     *string      `json:"dueDate,omitempty" validate:"omitempty,datetime=2006-01-02T15:04:05.000Z"`
 	Urgent      *bool        `json:"urgent,omitempty"`
 	Important   *bool        `json:"important,omitempty"`
@@ -117,16 +118,13 @@ func determineQuadrantFromFlags(urgent, important bool) TaskQuadrant {
 
 // NewTask creates a new task from form data
 func NewTask(formData TaskFormData) (*Task, error) {
-	// Validate form data
-	if err := validate.Struct(formData); err != nil {
-		return nil, fmt.Errorf("validation failed: %w", err)
+	// Use custom validation for better error messages
+	if err := validateTaskFormData(formData); err != nil {
+		return nil, err
 	}
 	
 	// Validate and trim title
 	title := strings.TrimSpace(formData.Title)
-	if title == "" {
-		return nil, errors.New("task title is required")
-	}
 	
 	// Validate description if provided
 	var description *string
@@ -134,13 +132,6 @@ func NewTask(formData TaskFormData) (*Task, error) {
 		desc := strings.TrimSpace(*formData.Description)
 		if desc != "" {
 			description = &desc
-		}
-	}
-	
-	// Validate due date if provided
-	if formData.DueDate != nil && *formData.DueDate != "" {
-		if _, err := time.Parse(time.RFC3339, *formData.DueDate); err != nil {
-			return nil, errors.New("invalid due date format, expected ISO8601")
 		}
 	}
 	
@@ -166,9 +157,9 @@ func NewTask(formData TaskFormData) (*Task, error) {
 
 // Update applies partial updates to a task
 func (t *Task) Update(updates TaskUpdate) error {
-	// Validate the update request
-	if err := validate.Struct(updates); err != nil {
-		return fmt.Errorf("validation failed: %w", err)
+	// Use custom validation for better error messages
+	if err := validateTaskUpdate(updates); err != nil {
+		return err
 	}
 	
 	now := time.Now().UTC().Format(time.RFC3339)
@@ -176,9 +167,6 @@ func (t *Task) Update(updates TaskUpdate) error {
 	// Apply updates
 	if updates.Title != nil {
 		title := strings.TrimSpace(*updates.Title)
-		if title == "" {
-			return errors.New("task title cannot be empty")
-		}
 		t.Title = title
 	}
 	
@@ -195,9 +183,6 @@ func (t *Task) Update(updates TaskUpdate) error {
 		if *updates.DueDate == "" {
 			t.DueDate = nil
 		} else {
-			if _, err := time.Parse(time.RFC3339, *updates.DueDate); err != nil {
-				return errors.New("invalid due date format, expected ISO8601")
-			}
 			t.DueDate = updates.DueDate
 		}
 	}
@@ -363,4 +348,56 @@ func TasksFromJSON(data []byte) ([]Task, error) {
 // TasksToJSON converts a slice of tasks to JSON bytes
 func TasksToJSON(tasks []Task) ([]byte, error) {
 	return json.Marshal(tasks)
+}
+
+// validateTaskFormData provides user-friendly validation for task form data
+func validateTaskFormData(formData TaskFormData) error {
+	// Check title
+	if strings.TrimSpace(formData.Title) == "" {
+		return errors.New("validation failed: Task title is required")
+	}
+	if len(formData.Title) > 100 {
+		return errors.New("validation failed: Task title must be 100 characters or less")
+	}
+	
+	// Check description
+	if formData.Description != nil && len(*formData.Description) > 2000 {
+		return errors.New("validation failed: Task description must be 2000 characters or less")
+	}
+	
+	// Check due date format if provided
+	if formData.DueDate != nil && *formData.DueDate != "" {
+		if _, err := time.Parse(time.RFC3339, *formData.DueDate); err != nil {
+			return errors.New("validation failed: Invalid due date format. Please use a valid date")
+		}
+	}
+	
+	return nil
+}
+
+// validateTaskUpdate provides user-friendly validation for task updates
+func validateTaskUpdate(update TaskUpdate) error {
+	// Check title if provided
+	if update.Title != nil {
+		if strings.TrimSpace(*update.Title) == "" {
+			return errors.New("validation failed: Task title cannot be empty")
+		}
+		if len(*update.Title) > 100 {
+			return errors.New("validation failed: Task title must be 100 characters or less")
+		}
+	}
+	
+	// Check description if provided
+	if update.Description != nil && len(*update.Description) > 2000 {
+		return errors.New("validation failed: Task description must be 2000 characters or less")
+	}
+	
+	// Check due date format if provided
+	if update.DueDate != nil && *update.DueDate != "" {
+		if _, err := time.Parse(time.RFC3339, *update.DueDate); err != nil {
+			return errors.New("validation failed: Invalid due date format. Please use a valid date")
+		}
+	}
+	
+	return nil
 }

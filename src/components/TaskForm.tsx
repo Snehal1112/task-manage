@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Save, X } from 'lucide-react';
 import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
+import { cn } from '@/lib/utils';
 
 interface TaskFormProps {
   task?: Task;
@@ -114,6 +115,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
   };
 
   const updateFormData = (field: keyof TaskFormData, value: string | boolean) => {
+    if (field === 'description' && typeof value === 'string' && value.length > 2000) {
+      // Truncate to 2000 characters
+      value = value.substring(0, 2000);
+    }
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -169,6 +174,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
               placeholder="Optional task description..."
               rows={3}
             />
+            <div className="text-xs mt-1 text-muted-foreground">
+              {2000 - (formData.description || '').length} characters remaining
+            </div>
           </div>
 
           <div>
@@ -220,7 +228,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
               <X className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />
               Cancel
             </Button>
-            <Button type="submit">
+            <Button 
+              type="submit"
+              disabled={(formData.description || '').length > 2000}
+            >
               {task ? (
                 <>
                   <Save className={`${CONTEXT_ICON_SIZES.formButton} mr-2`} />

@@ -91,7 +91,7 @@ Tasks match the TypeScript interface exactly:
 {
   "id": "uuid-string",
   "title": "Task title (max 100 chars)",
-  "description": "Optional description (max 500 chars)",
+  "description": "Optional description (max 2000 chars)",
   "dueDate": "2023-12-31T23:59:59.000Z",
   "urgent": false,
   "important": true,

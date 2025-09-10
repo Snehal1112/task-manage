@@ -61,6 +61,10 @@ func (s *TaskService) CreateTask(formData models.TaskFormData) (*models.Task, er
 	// Create new task from form data
 	newTask, err := models.NewTask(formData)
 	if err != nil {
+		// Don't wrap validation errors with additional context
+		if strings.Contains(err.Error(), "validation failed") {
+			return nil, err
+		}
 		return nil, fmt.Errorf("failed to create task: %w", err)
 	}
 
@@ -105,6 +109,10 @@ func (s *TaskService) UpdateTask(update models.TaskUpdate) (*models.Task, error)
 	for i, task := range tasks {
 		if task.ID == update.ID {
 			if err := task.Update(update); err != nil {
+				// Don't wrap validation errors with additional context
+				if strings.Contains(err.Error(), "validation failed") {
+					return nil, err
+				}
 				return nil, fmt.Errorf("failed to apply task updates: %w", err)
 			}
 			tasks[i] = task

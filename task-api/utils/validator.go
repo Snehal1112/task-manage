@@ -32,8 +32,8 @@ func ValidateDescription(description *string) error {
 		return nil // Optional field
 	}
 	
-	if len(*description) > 500 {
-		return errors.New("description must be 500 characters or less")
+	if len(*description) > 2000 {
+		return errors.New("description must be 2000 characters or less")
 	}
 	return nil
 }
@@ -125,8 +125,8 @@ func SanitizeDescription(description *string) (*string, error) {
 		return nil, nil // Empty description becomes nil
 	}
 	
-	if len(sanitized) > 500 {
-		return nil, errors.New("description must be 500 characters or less")
+	if len(sanitized) > 2000 {
+		return nil, errors.New("description must be 2000 characters or less")
 	}
 	
 	return &sanitized, nil
