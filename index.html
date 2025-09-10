@@ -7,10 +7,65 @@
     <meta name="theme-color" content="#3b82f6" />
     <meta name="description" content="Organize tasks using the Eisenhower Matrix method for better productivity and time management" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Performance optimizations -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.tsx">
+    <link rel="modulepreload" href="/src/App.tsx">
+
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+    <!-- PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Task Management">
+
     <title>Task Management - Eisenhower Matrix</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Performance monitoring -->
+    <script>
+      // Measure page load performance
+      window.addEventListener('load', () => {
+        if ('performance' in window) {
+          const perfData = performance.getEntriesByType('navigation')[0];
+          const pageLoadTime = perfData.loadEventEnd - perfData.fetchStart;
+
+          // Send to analytics if available
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'page_load_time', {
+              value: Math.round(pageLoadTime),
+              custom_map: { metric1: 'page_load_time' }
+            });
+          }
+
+          // Log in development
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`Page load time: ${Math.round(pageLoadTime)}ms`);
+          }
+        }
+      });
+
+      // Error boundary for unhandled errors
+      window.addEventListener('error', (event) => {
+        console.error('Unhandled error:', event.error);
+        // Could send to error reporting service
+      });
+
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+        // Could send to error reporting service
+      });
+    </script>
   </body>
 </html>

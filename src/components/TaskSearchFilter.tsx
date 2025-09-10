@@ -1,4 +1,4 @@
-import React, { useState, useMemo, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useMemo, forwardRef, useImperativeHandle, useCallback, useEffect } from 'react';
 import { useAppSelector } from '@/app/hooks';
 import { selectAllTasks } from '@/features/tasks/tasksSelectors';
 import { Task } from '@/features/tasks/TaskTypes';
@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Search, Filter, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
+import { performanceUtils } from '@/lib/performance';
 
 interface TaskFilters {
   search: string;
@@ -38,8 +39,22 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
       showImportant: false,
       quadrant: 'all'
     });
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+    // Debounced search to prevent excessive re-renders
+    const debouncedSetSearch = useMemo(
+      () => performanceUtils.debounce((value: string) => {
+        setDebouncedSearch(value);
+      }, 300),
+      []
+    );
+
+    // Update debounced search when filters.search changes
+    useEffect(() => {
+      debouncedSetSearch(filters.search);
+    }, [filters.search, debouncedSetSearch]);
 
     useImperativeHandle(ref, () => ({
       focusSearch: () => {
@@ -56,15 +71,17 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
           showImportant: false,
           quadrant: 'all'
         });
+        setDebouncedSearch('');
       }
     }));
 
+    // Memoized filtered tasks with debounced search
     const filteredTasks = useMemo(() => {
       let filtered = allTasks;
 
-      // Search filter
-      if (filters.search.trim()) {
-        const searchTerm = filters.search.toLowerCase();
+      // Search filter with debounced value
+      if (debouncedSearch.trim()) {
+        const searchTerm = debouncedSearch.toLowerCase();
         filtered = filtered.filter(task =>
           task.title.toLowerCase().includes(searchTerm) ||
           task.description?.toLowerCase().includes(searchTerm)
@@ -92,18 +109,18 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
       }
 
       return filtered;
-    }, [allTasks, filters]);
+    }, [allTasks, debouncedSearch, filters.showCompleted, filters.showUrgent, filters.showImportant, filters.quadrant]);
 
     // Notify parent component of filtered tasks
-    React.useEffect(() => {
+    useEffect(() => {
       onFilteredTasksChange(filteredTasks);
     }, [filteredTasks, onFilteredTasksChange]);
 
-    const updateFilter = (key: keyof TaskFilters, value: string | boolean) => {
+    const updateFilter = useCallback((key: keyof TaskFilters, value: string | boolean) => {
       setFilters(prev => ({ ...prev, [key]: value }));
-    };
+    }, []);
 
-    const clearFilters = () => {
+    const clearFilters = useCallback(() => {
       setFilters({
         search: '',
         showCompleted: false,
@@ -111,17 +128,18 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
         showImportant: false,
         quadrant: 'all'
       });
-    };
+      setDebouncedSearch('');
+    }, []);
 
     const activeFiltersCount = useMemo(() => {
       let count = 0;
-      if (filters.search.trim()) count++;
+      if (debouncedSearch.trim()) count++;
       if (filters.showCompleted) count++;
       if (filters.showUrgent) count++;
       if (filters.showImportant) count++;
       if (filters.quadrant !== 'all') count++;
       return count;
-    }, [filters]);
+    }, [debouncedSearch, filters]);
 
     const hasActiveFilters = activeFiltersCount > 0;
 
