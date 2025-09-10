@@ -3,7 +3,6 @@ import { store } from './app/store';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
-import { loadTasksFromStorage } from './utils/storage';
 
 function App() {
   return (

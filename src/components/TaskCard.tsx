@@ -73,6 +73,14 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
     setShowDetailModal(true);
   }, []);
 
+  const handleTitleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowDetailModal(true);
+    }
+  }, []);
+
   const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -123,12 +131,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
               <h3 className={cn(
                 "font-bold text-sm sm:text-base leading-tight flex-1 min-w-0 break-words tracking-tight cursor-pointer hover:text-blue-700 focus:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-sm transition-colors",
                 task.completed && "line-through text-muted-foreground hover:text-gray-600 focus:text-gray-600"
-              )} onClick={handleTitleClick} tabIndex={0} onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleTitleClick(e as React.MouseEvent<HTMLElement>);
-                }
-              }}>
+              )} onClick={handleTitleClick} tabIndex={0} onKeyDown={handleTitleKeyDown}>
                 <span className="block truncate">{task.title}</span>
               </h3>
               <div className="flex items-center space-x-1 flex-shrink-0">

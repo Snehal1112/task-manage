@@ -26,9 +26,6 @@ interface BackupList {
   count: number;
 }
 
-interface RestoreRequest {
-  backup_name: string;
-}
 
 // HTTP Client wrapper with error handling
 class APIClient {

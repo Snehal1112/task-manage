@@ -299,6 +299,7 @@ EOF
 
 # REQUIRED: Encryption key for secure data storage (must be 32+ characters)
 # IMPORTANT: Change this to a secure random key for production use
+# e.g generate with: openssl rand -base64 32
 TASK_ENCRYPTION_KEY=$TASK_ENCRYPTION_VALUE
 
 # Server Configuration

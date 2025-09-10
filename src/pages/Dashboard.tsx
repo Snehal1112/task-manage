@@ -8,7 +8,6 @@ import TaskList, { TaskListRef } from '@/components/TaskList';
 import EisenhowerMatrix from '@/components/EisenhowerMatrix';
 import TaskForm from '@/components/TaskForm';
 import KeyboardShortcuts from '@/components/KeyboardShortcuts';
-import {loadTasksFromStorage } from '@/utils/storage';
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();

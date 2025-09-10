@@ -1,9 +1,7 @@
 import React from 'react';
 import { Task } from '@/features/tasks/TaskTypes';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import Quadrant from './Quadrant';
-import { Target } from 'lucide-react';
-import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
 
 interface EisenhowerMatrixProps {
   onEditTask: (task: Task) => void;
