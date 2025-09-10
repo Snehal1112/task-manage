@@ -37,6 +37,11 @@ export const Dialog: React.FC<DialogProps> = ({ open, onClose, onOpenChange, chi
   const dialogRef = React.useRef<HTMLDivElement>(null);
   const previousFocusRef = React.useRef<HTMLElement | null>(null);
 
+  const handleClose = React.useCallback(() => {
+    if (onClose) onClose();
+    if (onOpenChange) onOpenChange(false);
+  }, [onClose, onOpenChange]);
+
   React.useEffect(() => {
     if (open) {
       // Store the currently focused element
@@ -68,12 +73,7 @@ export const Dialog: React.FC<DialogProps> = ({ open, onClose, onOpenChange, chi
         previousFocusRef.current.focus();
       }
     }
-  }, [open]);
-
-  const handleClose = () => {
-    if (onClose) onClose();
-    if (onOpenChange) onOpenChange(false);
-  };
+  }, [open, handleClose]);
 
   if (!open) return null;
 

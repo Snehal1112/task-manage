@@ -1,10 +1,32 @@
 // Performance optimization utilities
+
+// Type definitions for performance utilities
+type GenericFunction = (...args: unknown[]) => unknown;
+type DebouncedFunction<T extends GenericFunction> = (...args: Parameters<T>) => void;
+type ThrottledFunction<T extends GenericFunction> = (...args: Parameters<T>) => void;
+
+// Performance API types
+interface LayoutShiftEntry extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
+interface MemoryInfo {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface PerformanceWithMemory extends Performance {
+  memory?: MemoryInfo;
+}
+
 export const performanceUtils = {
   // Debounce function for search inputs
-  debounce: <T extends (...args: any[]) => any>(
+  debounce: <T extends GenericFunction>(
     func: T,
     wait: number
-  ): ((...args: Parameters<T>) => void) => {
+  ): DebouncedFunction<T> => {
     let timeout: NodeJS.Timeout;
     return (...args: Parameters<T>) => {
       clearTimeout(timeout);
@@ -13,10 +35,10 @@ export const performanceUtils = {
   },
 
   // Throttle function for scroll handlers
-  throttle: <T extends (...args: any[]) => any>(
+  throttle: <T extends GenericFunction>(
     func: T,
     limit: number
-  ): ((...args: Parameters<T>) => void) => {
+  ): ThrottledFunction<T> => {
     let inThrottle: boolean;
     return (...args: Parameters<T>) => {
       if (!inThrottle) {
@@ -45,13 +67,14 @@ export const performanceUtils = {
   },
 
   // Memory usage monitoring
-  getMemoryUsage: () => {
-    if ('memory' in performance) {
-      const mem = (performance as any).memory;
+  getMemoryUsage: (): MemoryInfo | null => {
+    const perfWithMemory = performance as PerformanceWithMemory;
+    const mem = perfWithMemory.memory;
+    if (mem) {
       return {
-        used: Math.round(mem.usedJSHeapSize / 1024 / 1024),
-        total: Math.round(mem.totalJSHeapSize / 1024 / 1024),
-        limit: Math.round(mem.jsHeapSizeLimit / 1024 / 1024)
+        usedJSHeapSize: Math.round(mem.usedJSHeapSize / 1024 / 1024),
+        totalJSHeapSize: Math.round(mem.totalJSHeapSize / 1024 / 1024),
+        jsHeapSizeLimit: Math.round(mem.jsHeapSizeLimit / 1024 / 1024)
       };
     }
     return null;
@@ -65,8 +88,9 @@ export const performanceUtils = {
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        if (!(entry as any).hadRecentInput) {
-          clsValue += (entry as any).value;
+        const layoutShiftEntry = entry as LayoutShiftEntry;
+        if (!layoutShiftEntry.hadRecentInput) {
+          clsValue += layoutShiftEntry.value;
         }
       }
       vitals.cls = clsValue;

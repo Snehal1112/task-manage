@@ -1,0 +1,53 @@
+{
+  "budgets": [
+    {
+      "name": "main-bundle",
+      "size": 250,
+      "unit": "kB",
+      "warningThreshold": 0.9,
+      "errorThreshold": 1.0
+    },
+    {
+      "name": "vendor-bundle",
+      "size": 150,
+      "unit": "kB",
+      "warningThreshold": 0.9,
+      "errorThreshold": 1.0
+    },
+    {
+      "name": "css-bundle",
+      "size": 50,
+      "unit": "kB",
+      "warningThreshold": 0.9,
+      "errorThreshold": 1.0
+    }
+  ],
+  "performanceMetrics": {
+    "lcp": {
+      "target": 2500,
+      "unit": "ms",
+      "warningThreshold": 1.1,
+      "errorThreshold": 1.5
+    },
+    "fid": {
+      "target": 100,
+      "unit": "ms",
+      "warningThreshold": 1.2,
+      "errorThreshold": 2.0
+    },
+    "cls": {
+      "target": 0.1,
+      "unit": "score",
+      "warningThreshold": 1.5,
+      "errorThreshold": 2.0
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "reportTo": "console",
+    "ci": {
+      "failOnBudgetExceeded": true,
+      "generateReport": true
+    }
+  }
+}

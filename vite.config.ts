@@ -1,9 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { visualizer } from 'rollup-plugin-visualizer'
 
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    // Bundle analyzer (only in development)
+    mode === 'analyze' && visualizer({
+      filename: 'dist/bundle-analysis.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
+    })
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -22,44 +32,85 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Vendor chunk for React ecosystem
+          // Core React chunk (most critical)
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
+              return 'react-core';
             }
+            // Redux ecosystem
             if (id.includes('@reduxjs/toolkit') || id.includes('react-redux') || id.includes('reselect')) {
-              return 'redux-vendor';
+              return 'redux-store';
             }
+            // UI libraries
+            if (id.includes('@dnd-kit') || id.includes('@radix-ui') || id.includes('class-variance-authority')) {
+              return 'ui-framework';
+            }
+            // Icons (can be lazy loaded)
             if (id.includes('lucide-react')) {
-              return 'icons-vendor';
+              return 'icons';
             }
-            if (id.includes('@dnd-kit') || id.includes('@radix-ui')) {
-              return 'ui-vendor';
+            // Utilities
+            if (id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'utils';
             }
-            // Other node_modules go to vendor
+            // Other vendor libraries
             return 'vendor';
           }
 
-          // Feature-based chunks
+          // Feature-based code splitting
           if (id.includes('features/tasks')) {
-            return 'tasks-feature';
+            return 'feature-tasks';
           }
+          if (id.includes('features/')) {
+            return 'features';
+          }
+
+          // Component chunks
           if (id.includes('components/ui')) {
             return 'ui-components';
           }
           if (id.includes('components/') && !id.includes('ui')) {
             return 'app-components';
           }
-        }
+
+          // Service layer
+          if (id.includes('services/') || id.includes('api')) {
+            return 'services';
+          }
+
+          // Utilities and hooks
+          if (id.includes('lib/') || id.includes('utils/') || id.includes('hooks/')) {
+            return 'utils';
+          }
+        },
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') ?? [];
+          const _ext = info[info.length - 1];
+          if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name ?? '')) {
+            return `assets/images/[name]-[hash][extname]`;
+          }
+          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name ?? '')) {
+            return `assets/fonts/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+      },
+      onwarn(warning, warn) {
+        // Suppress certain warnings
+        if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+        if (warning.code === 'THIS_IS_UNDEFINED') return;
+        warn(warning);
       }
     },
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 400, // Stricter limit
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: mode === 'production',
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
         passes: 2,
       },
       mangle: {
@@ -67,7 +118,7 @@ export default defineConfig({
       }
     },
     cssCodeSplit: true,
-    sourcemap: false,
+    sourcemap: mode === 'development',
     reportCompressedSize: true,
   },
   optimizeDeps: {
@@ -77,7 +128,13 @@ export default defineConfig({
       'react-redux',
       '@reduxjs/toolkit',
       'reselect',
-      'lucide-react'
+      'lucide-react',
+      '@dnd-kit/core',
+      '@dnd-kit/utilities'
+    ],
+    exclude: [
+      // Exclude large libraries that should be external or lazy loaded
+      'lucide-react/dist/esm/icons/*'
     ]
   }
-})
+}))

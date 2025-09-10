@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
-import ErrorBoundary from './components/ErrorBoundary';
+import { AsyncErrorBoundary, NetworkErrorBoundary } from './components/AsyncErrorBoundary';
 import './index.css';
 
 // Lazy load components with performance monitoring
@@ -9,15 +9,20 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 // Performance monitoring hook
 const usePerformanceMonitor = () => {
-  const [metrics, setMetrics] = useState({
+  const [metrics, setMetrics] = useState<{
+    loadTime: number;
+    renderTime: number;
+    interactionTime: number;
+    memoryUsage: { used: number; total: number; limit: number } | null;
+  }>({
     loadTime: 0,
     renderTime: 0,
     interactionTime: 0,
-    memoryUsage: null as any
+    memoryUsage: null
   });
 
   useEffect(() => {
-    const startTime = performance.now();
+    const _startTime = performance.now();
 
     // Register service worker
     if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
@@ -45,11 +50,17 @@ const usePerformanceMonitor = () => {
     // Monitor First Input Delay (FID)
     const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        setMetrics(prev => ({
-          ...prev,
-          interactionTime: entry.processingStart - entry.startTime
-        }));
+      entries.forEach((entry) => {
+        const fidEntry = entry as PerformanceEntry & {
+          processingStart?: number;
+          startTime?: number;
+        };
+        if (fidEntry.processingStart !== undefined && fidEntry.startTime !== undefined) {
+          setMetrics(prev => ({
+            ...prev,
+            interactionTime: fidEntry.processingStart! - fidEntry.startTime!
+          }));
+        }
       });
     });
 
@@ -57,7 +68,14 @@ const usePerformanceMonitor = () => {
 
     // Monitor memory usage
     const memoryInterval = setInterval(() => {
-      const memory = (performance as any).memory;
+      const perfWithMemory = performance as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+      const memory = perfWithMemory.memory;
       if (memory) {
         setMetrics(prev => ({
           ...prev,
@@ -114,7 +132,13 @@ function App() {
   const metrics = usePerformanceMonitor();
 
   return (
-    <ErrorBoundary>
+    <AsyncErrorBoundary
+      onError={(error, errorInfo) => {
+        console.error('App Error:', error, errorInfo);
+        // Could send to error reporting service here
+      }}
+      showDetails={process.env.NODE_ENV === 'development'}
+    >
       <Provider store={store}>
         {/* Skip link for accessibility */}
         <a
@@ -124,9 +148,11 @@ function App() {
           Skip to main content
         </a>
 
-        <Suspense fallback={<LoadingFallback />}>
-          <Dashboard />
-        </Suspense>
+        <NetworkErrorBoundary>
+          <Suspense fallback={<LoadingFallback />}>
+            <Dashboard />
+          </Suspense>
+        </NetworkErrorBoundary>
 
         {/* Performance metrics (hidden in production) */}
         {process.env.NODE_ENV === 'development' && (
@@ -143,7 +169,7 @@ function App() {
           </div>
         )}
       </Provider>
-    </ErrorBoundary>
+    </AsyncErrorBoundary>
   );
 }
 

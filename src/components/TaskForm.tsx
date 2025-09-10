@@ -10,7 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Save, X } from 'lucide-react';
 import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
-import { cn } from '@/lib/utils';
 
 interface TaskFormProps {
   task?: Task;

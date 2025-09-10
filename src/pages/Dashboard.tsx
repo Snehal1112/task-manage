@@ -1,13 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { selectTasksCount } from '@/features/tasks/tasksSelectors';
 import { fetchTasks } from '@/features/tasks/tasksSlice';
 import { Task } from '@/features/tasks/TaskTypes';
 import DragDropWrapper from '@/components/DragDropWrapper';
 import TaskList, { TaskListRef } from '@/components/TaskList';
-import EisenhowerMatrix from '@/components/EisenhowerMatrix';
-import TaskForm from '@/components/TaskForm';
 import KeyboardShortcuts from '@/components/KeyboardShortcuts';
+
+// Lazy load heavy components
+const EisenhowerMatrix = lazy(() => import('@/components/EisenhowerMatrix'));
+const TaskForm = lazy(() => import('@/components/TaskForm'));
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -74,21 +76,32 @@ const Dashboard: React.FC = () => {
 
             {/* Eisenhower Matrix - Right Column */}
             <div className="flex-1 lg:min-w-[400px]">
-              <EisenhowerMatrix
-                onEditTask={handleEditTask}
-                tasks={filteredTasks}
-              />
+              <Suspense fallback={
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center space-y-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                    <p className="text-sm text-muted-foreground">Loading Matrix...</p>
+                  </div>
+                </div>
+              }>
+                <EisenhowerMatrix
+                  onEditTask={handleEditTask}
+                  tasks={filteredTasks}
+                />
+              </Suspense>
             </div>
           </div>
         </DragDropWrapper>
       </main>
 
       {/* Task Form Modal */}
-      <TaskForm
-        task={editingTask}
-        isOpen={isTaskFormOpen}
-        onClose={handleCloseTaskForm}
-      />
+      <Suspense fallback={null}>
+        <TaskForm
+          task={editingTask}
+          isOpen={isTaskFormOpen}
+          onClose={handleCloseTaskForm}
+        />
+      </Suspense>
 
       {/* Keyboard Shortcuts */}
       <KeyboardShortcuts

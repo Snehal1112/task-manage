@@ -45,8 +45,8 @@ const TaskSearchFilter = forwardRef<TaskSearchFilterRef, TaskSearchFilterProps>(
 
     // Debounced search to prevent excessive re-renders
     const debouncedSetSearch = useMemo(
-      () => performanceUtils.debounce((value: string) => {
-        setDebouncedSearch(value);
+      () => performanceUtils.debounce((value: unknown) => {
+        setDebouncedSearch(value as string);
       }, 300),
       []
     );
