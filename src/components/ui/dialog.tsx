@@ -47,13 +47,8 @@ export const Dialog: React.FC<DialogProps> = ({ open, onClose, onOpenChange, chi
       // Store the currently focused element
       previousFocusRef.current = document.activeElement as HTMLElement;
       
-      // Focus the dialog
-      setTimeout(() => {
-        dialogRef.current?.focus();
-      }, 100);
-      
-      // Prevent body scroll
-      document.body.style.overflow = 'hidden';
+      // Prevent body scroll using CSS classes instead of direct DOM manipulation
+      document.body.classList.add('overflow-hidden');
       
       // Add escape key listener
       const handleEscape = (e: KeyboardEvent) => {
@@ -65,33 +60,40 @@ export const Dialog: React.FC<DialogProps> = ({ open, onClose, onOpenChange, chi
       
       return () => {
         document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = '';
+        document.body.classList.remove('overflow-hidden');
       };
     } else {
       // Restore focus when closing
-      if (previousFocusRef.current) {
+      if (previousFocusRef.current && previousFocusRef.current !== document.body) {
         previousFocusRef.current.focus();
       }
     }
   }, [open, handleClose]);
 
-  if (!open) return null;
-
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200",
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      )}
       role="dialog"
       aria-modal="true"
+      aria-hidden={!open}
     >
       <div 
-        className="fixed inset-0 bg-black/80" 
+        className={cn(
+          "fixed inset-0 bg-black/80 transition-opacity duration-200",
+          open ? "opacity-100" : "opacity-0"
+        )} 
         onClick={handleClose}
         aria-hidden="true"
       />
       <div 
         ref={dialogRef}
-        className="relative z-50 max-w-lg w-full mx-4"
-        tabIndex={-1}
+        className={cn(
+          "relative z-50 max-w-lg w-full mx-4 transition-all duration-200",
+          open ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        )}
       >
         {children}
       </div>

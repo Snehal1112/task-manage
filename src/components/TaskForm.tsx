@@ -60,7 +60,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
         completed: false,
       });
     }
-  }, [task]);
+  }, [task]); // Include task as dependency
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,7 +159,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
               onChange={(e) => updateFormData('title', e.target.value)}
               placeholder="Enter task title..."
               required
-              autoFocus
+              autoFocus={isOpen && !task} // Only auto-focus when opening for new task
             />
           </div>
 
