@@ -55,7 +55,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           </p>
           {task.description && (
             <div
-              className="text-xs text-muted-foreground line-clamp-2 prose prose-xs max-w-none leading-tight"
+              className="text-xs text-muted-foreground line-clamp-2 prose prose-xs max-w-none leading-none"
               dangerouslySetInnerHTML={{
                 __html: task.description.length > 150
                   ? task.description.substring(0, 150) + '...'

@@ -114,7 +114,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, isOpen, onClose
               <h3 className="font-semibold text-base">Description</h3>
               <div className="bg-muted/30 p-4 rounded-lg">
                 <div
-                  className="text-xs leading-tight prose prose-xs max-w-none"
+                  className="text-xs leading-none prose prose-xs max-w-none"
                   dangerouslySetInnerHTML={{ __html: task.description }}
                 />
               </div>

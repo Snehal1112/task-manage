@@ -39,7 +39,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-4 text-xs leading-tight',
+        class: 'prose max-w-none focus:outline-none min-h-[120px] p-4 text-xs leading-none',
       },
     },
   });
@@ -89,7 +89,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   return (
     <div className={cn("border rounded-md", className)}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 border-b bg-muted/50">
+      <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-muted/50">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
