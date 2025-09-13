@@ -1,7 +1,8 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Bold, Italic, List, ListOrdered, Quote } from 'lucide-react';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Bold, Italic, List, ListOrdered, Quote, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +31,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           keepAttributes: false,
         },
       }),
+      TextStyle,
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -37,7 +39,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-4',
+        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-4 text-xs leading-tight',
       },
     },
   });
@@ -71,6 +73,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       {children}
     </Button>
   );
+
+  const increaseFontSize = () => {
+    const currentSize = parseInt(editor.getAttributes('textStyle').fontSize || '12');
+    const newSize = Math.min(currentSize + 2, 24); // Max 24px
+    editor.chain().focus().setMark('textStyle', { fontSize: `${newSize}px` }).run();
+  };
+
+  const decreaseFontSize = () => {
+    const currentSize = parseInt(editor.getAttributes('textStyle').fontSize || '12');
+    const newSize = Math.max(currentSize - 2, 10); // Min 10px
+    editor.chain().focus().setMark('textStyle', { fontSize: `${newSize}px` }).run();
+  };
 
   return (
     <div className={cn("border rounded-md", className)}>
@@ -113,6 +127,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           isActive={editor.isActive('blockquote')}
         >
           <Quote className="h-4 w-4" />
+        </ToolbarButton>
+
+        <div className="w-px h-6 bg-border mx-1" />
+
+        <ToolbarButton
+          onClick={decreaseFontSize}
+        >
+          <Minus className="h-4 w-4" />
+        </ToolbarButton>
+
+        <ToolbarButton
+          onClick={increaseFontSize}
+        >
+          <Plus className="h-4 w-4" />
         </ToolbarButton>
       </div>
 
