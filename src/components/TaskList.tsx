@@ -58,10 +58,17 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ onAddTask, onEditTask
     // Search filter
     if (filters.search.trim()) {
       const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(task =>
-        task.title.toLowerCase().includes(searchTerm) ||
-        task.description?.toLowerCase().includes(searchTerm)
-      );
+      filtered = filtered.filter(task => {
+        const titleMatch = task.title.toLowerCase().includes(searchTerm);
+        const descriptionMatch = task.description ? (() => {
+          // Extract text content from HTML for searching
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = task.description;
+          const textContent = tempDiv.textContent || tempDiv.innerText || '';
+          return textContent.toLowerCase().includes(searchTerm);
+        })() : false;
+        return titleMatch || descriptionMatch;
+      });
     }
 
     // Completion filter

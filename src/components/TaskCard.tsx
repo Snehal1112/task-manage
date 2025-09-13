@@ -169,7 +169,14 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
               {task.description && (
                 <div className="min-w-0 mb-2">
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-relaxed break-words">
-                    <span className="line-clamp-2">{task.description}</span>
+                    <span
+                      className="line-clamp-2 prose prose-xs max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: task.description.length > 200
+                          ? task.description.substring(0, 200) + '...'
+                          : task.description
+                      }}
+                    />
                   </p>
                 </div>
               )}

@@ -6,7 +6,7 @@ import { Task, TaskFormData } from '@/features/tasks/TaskTypes';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import RichTextEditor from '@/components/RichTextEditor';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Save, X } from 'lucide-react';
 import { CONTEXT_ICON_SIZES } from '@/utils/iconSizes';
@@ -114,9 +114,20 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
   };
 
   const updateFormData = (field: keyof TaskFormData, value: string | boolean) => {
-    if (field === 'description' && typeof value === 'string' && value.length > 2000) {
-      // Truncate to 2000 characters
-      value = value.substring(0, 2000);
+    if (field === 'description' && typeof value === 'string') {
+      // For HTML content, limit to reasonable size (roughly equivalent to 2000 plain text characters)
+      // HTML content is typically 2-3x larger due to tags, so we'll allow more characters
+      if (value.length > 10000) {
+        // Extract text content to check actual text length
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = value;
+        const textContent = tempDiv.textContent || tempDiv.innerText || '';
+        if (textContent.length > 2000) {
+          // Truncate HTML content while preserving structure
+          const truncated = value.substring(0, 10000) + '...';
+          value = truncated;
+        }
+      }
     }
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -167,14 +178,20 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
             <label className="block text-sm font-medium mb-2">
               Description
             </label>
-            <Textarea
+            <RichTextEditor
               value={formData.description}
-              onChange={(e) => updateFormData('description', e.target.value)}
+              onChange={(value) => updateFormData('description', value)}
               placeholder="Optional task description..."
-              rows={3}
             />
             <div className="text-xs mt-1 text-muted-foreground">
-              {2000 - (formData.description || '').length} characters remaining
+              {(() => {
+                if (!formData.description) return '0 characters';
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = formData.description;
+                const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                const remaining = 2000 - textContent.length;
+                return `${textContent.length} characters (${remaining > 0 ? remaining : 0} remaining)`;
+              })()}
             </div>
           </div>
 
@@ -229,7 +246,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, isOpen, onClose }) => {
             </Button>
             <Button 
               type="submit"
-              disabled={(formData.description || '').length > 2000}
+              disabled={(() => {
+                if (!formData.description) return false;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = formData.description;
+                const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                return textContent.length > 2000;
+              })()}
             >
               {task ? (
                 <>

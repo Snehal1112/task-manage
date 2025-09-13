@@ -113,9 +113,10 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, isOpen, onClose
             <div className="space-y-2">
               <h3 className="font-semibold text-base">Description</h3>
               <div className="bg-muted/30 p-4 rounded-lg">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {task.description}
-                </p>
+                <div
+                  className="text-sm leading-relaxed prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: task.description }}
+                />
               </div>
             </div>
           )}
