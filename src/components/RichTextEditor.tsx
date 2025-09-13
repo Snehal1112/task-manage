@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { TextStyle } from '@tiptap/extension-text-style';
 import FontSize from '@tiptap/extension-font-size';
 import { Bold, Italic, List, ListOrdered, Quote, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           keepAttributes: false,
         },
       }),
+      TextStyle,
       FontSize,
     ],
     content: value,
@@ -40,7 +42,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       onChange(editor.getHTML());
     },
     onSelectionUpdate: ({ editor }) => {
-      const size = parseInt(editor.getAttributes('fontSize').fontSize || '12');
+      const size = parseInt(editor.getAttributes('textStyle').fontSize || '12');
       setCurrentFontSize(size);
     },
     editorProps: {
@@ -84,13 +86,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const increaseFontSize = () => {
     const newSize = Math.min(currentFontSize + 2, 24);
     setCurrentFontSize(newSize);
-    editor.chain().focus().selectParentNode().setMark('fontSize', { fontSize: `${newSize}px` }).run();
+    editor.chain().focus().selectParentNode().setFontSize(`${newSize}px`).run();
   };
 
   const decreaseFontSize = () => {
     const newSize = Math.max(currentFontSize - 2, 10);
     setCurrentFontSize(newSize);
-    editor.chain().focus().selectParentNode().setMark('fontSize', { fontSize: `${newSize}px` }).run();
+    editor.chain().focus().selectParentNode().setFontSize(`${newSize}px`).run();
   };
 
   return (
