@@ -171,6 +171,7 @@ const TaskCard = memo<TaskCardProps>(({ task, index: _index, onEdit, isDragOverl
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-none break-words">
                     <span
                       className="line-clamp-2 prose prose-xs max-w-none leading-none"
+                      style={{ lineHeight: 1 }}
                       dangerouslySetInnerHTML={{
                         __html: task.description.length > 200
                           ? task.description.substring(0, 200) + '...'

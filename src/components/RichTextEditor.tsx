@@ -40,6 +40,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     editorProps: {
       attributes: {
         class: 'prose max-w-none focus:outline-none min-h-[120px] p-4 text-xs leading-none',
+        style: 'line-height: 1;',
       },
     },
   });
