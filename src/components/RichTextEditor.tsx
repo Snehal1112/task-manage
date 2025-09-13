@@ -84,13 +84,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const increaseFontSize = () => {
     const newSize = Math.min(currentFontSize + 2, 24);
     setCurrentFontSize(newSize);
-    editor.chain().focus().setMark('fontSize', { fontSize: `${newSize}px` }).run();
+    editor.chain().focus().selectParentNode().setMark('fontSize', { fontSize: `${newSize}px` }).run();
   };
 
   const decreaseFontSize = () => {
     const newSize = Math.max(currentFontSize - 2, 10);
     setCurrentFontSize(newSize);
-    editor.chain().focus().setMark('fontSize', { fontSize: `${newSize}px` }).run();
+    editor.chain().focus().selectParentNode().setMark('fontSize', { fontSize: `${newSize}px` }).run();
   };
 
   return (
