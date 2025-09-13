@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { TextStyle } from '@tiptap/extension-text-style';
+import FontSize from '@tiptap/extension-font-size';
 import { Bold, Italic, List, ListOrdered, Quote, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   placeholder = "Start writing...",
   className
 }) => {
+  const [currentFontSize, setCurrentFontSize] = useState(12);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -31,11 +33,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           keepAttributes: false,
         },
       }),
-      TextStyle,
+      FontSize,
     ],
     content: value,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
+    },
+    onSelectionUpdate: ({ editor }) => {
+      const size = parseInt(editor.getAttributes('fontSize').fontSize || '12');
+      setCurrentFontSize(size);
     },
     editorProps: {
       attributes: {
@@ -76,15 +82,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   );
 
   const increaseFontSize = () => {
-    const currentSize = parseInt(editor.getAttributes('textStyle').fontSize || '12');
-    const newSize = Math.min(currentSize + 2, 24); // Max 24px
-    editor.chain().focus().setMark('textStyle', { fontSize: `${newSize}px` }).run();
+    const newSize = Math.min(currentFontSize + 2, 24);
+    setCurrentFontSize(newSize);
+    editor.chain().focus().setMark('fontSize', { fontSize: `${newSize}px` }).run();
   };
 
   const decreaseFontSize = () => {
-    const currentSize = parseInt(editor.getAttributes('textStyle').fontSize || '12');
-    const newSize = Math.max(currentSize - 2, 10); // Min 10px
-    editor.chain().focus().setMark('textStyle', { fontSize: `${newSize}px` }).run();
+    const newSize = Math.max(currentFontSize - 2, 10);
+    setCurrentFontSize(newSize);
+    editor.chain().focus().setMark('fontSize', { fontSize: `${newSize}px` }).run();
   };
 
   return (
