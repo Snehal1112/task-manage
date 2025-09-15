@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -53,9 +53,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
   });
 
+  useEffect(() => {
+    editor.commands.setContent(value);
+  }, [value, editor]);
+
   if (!editor) {
     return null;
   }
+
+  // Update editor content when value prop changes
+  useEffect(() => {
+    if (editor) {
+      editor.commands.setContent(value);
+    }
+  }, [editor, value]);
 
   const ToolbarButton = ({
     onClick,
