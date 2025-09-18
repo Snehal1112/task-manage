@@ -19,7 +19,6 @@
 
     <!-- Security headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
 
     <!-- PWA meta tags -->
@@ -49,10 +48,8 @@
             });
           }
 
-          // Log in development
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`Page load time: ${Math.round(pageLoadTime)}ms`);
-          }
+          // Log performance metrics
+          console.log(`Page load time: ${Math.round(pageLoadTime)}ms`);
         }
       });
 

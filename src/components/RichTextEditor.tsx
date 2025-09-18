@@ -53,20 +53,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
   });
 
-  useEffect(() => {
-    editor.commands.setContent(value);
-  }, [value, editor]);
-
-  if (!editor) {
-    return null;
-  }
-
   // Update editor content when value prop changes
   useEffect(() => {
     if (editor) {
       editor.commands.setContent(value);
     }
   }, [editor, value]);
+
+  if (!editor) {
+    return null;
+  }
 
   const ToolbarButton = ({
     onClick,

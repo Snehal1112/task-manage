@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Task, TasksState, TaskFormData, TaskQuadrant } from './TaskTypes';
+import { Task, TasksState, TaskFormData, TaskQuadrant, ViewType, GroupBy } from './TaskTypes';
 import { taskAPI } from '@/services/api';
 import { demoTasks } from '@/utils/demoData';
 
@@ -8,6 +8,10 @@ const initialState: TasksState = {
   tasks: [],
   loading: false,
   error: null,
+  view: {
+    currentView: 'matrix',
+    groupBy: 'none',
+  },
 };
 
 // Async thunks for API operations
@@ -147,6 +151,22 @@ const tasksSlice = createSlice({
     // Remove task locally for optimistic updates
     removeTaskLocal: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter(task => task.id !== action.payload);
+    },
+
+    // View management actions
+    setView: (state, action: PayloadAction<ViewType>) => {
+      state.view.currentView = action.payload;
+    },
+
+    setGroupBy: (state, action: PayloadAction<GroupBy>) => {
+      state.view.groupBy = action.payload;
+    },
+
+    resetView: (state) => {
+      state.view = {
+        currentView: 'matrix',
+        groupBy: 'none',
+      };
     },
   },
   extraReducers: (builder) => {
@@ -315,6 +335,9 @@ export const {
   updateTaskLocal,
   addTaskLocal,
   removeTaskLocal,
+  setView,
+  setGroupBy,
+  resetView,
 } = tasksSlice.actions;
 
 // Legacy action names for backward compatibility with existing components

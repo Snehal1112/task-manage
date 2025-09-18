@@ -23,8 +23,17 @@ export interface TaskFormData {
   completed: boolean;
 }
 
+export type ViewType = 'matrix' | 'table';
+export type GroupBy = 'none' | 'quadrant' | 'date' | 'overdue' | 'priority';
+
+export interface ViewState {
+  currentView: ViewType;
+  groupBy: GroupBy;
+}
+
 export interface TasksState {
   tasks: Task[];
   loading: boolean;
   error: string | null;
+  view: ViewState;
 }
